@@ -7,7 +7,7 @@ function ImageCanvas(options) {
   var IMAGE_TIME = 200;
   var TRANSITION_TIME = 1000;
 
-  var W = 658;
+  var W = 659;
   var H = 480;
   var containerRatio = W / H;
 
@@ -108,6 +108,7 @@ function ImageCanvas(options) {
   function nextImage(el) {
     _imageIndex++;
     el.loading = true;
+    el.crossOrigin = "anonymous";
     el.src = _imageSources[_imageIndex];
   }
 
@@ -173,10 +174,25 @@ function ImageCanvas(options) {
     _imageSources = json;
   }
 
+  function setTransitionTime(time){
+    TRANSITION_TIME = time;
+  }
+
+  function setImageHold(time){
+    IMAGE_TIME = time;
+  }
+
+  function getTransitionValue(){
+    return _transitionValue;
+  }
+
   return {
     init: init,
     update: update,
     setImages: setImages,
+    getTransitionValue:getTransitionValue,
+    setTransitionTime:setTransitionTime,
+    setImageHold:setImageHold,
     canvas:canvas
   }
 }

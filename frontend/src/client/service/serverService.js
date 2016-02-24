@@ -7,12 +7,11 @@ import fetch from 'isomorphic-fetch';
 const MOON_BASE = "https://s3-eu-west-1.amazonaws.com/rad-moon/"
 const ServerService = {
 
-    getAudioData() {
+    getManifest() {
         return fetch(`${MOON_BASE}rad-moon-manifest`).then(response => {
             return response.json();
         });
     }
-
 
 };
 export default ServerService;

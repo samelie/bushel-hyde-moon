@@ -23,7 +23,7 @@ aws.config.update({
     region: process.env.AWS_REGION
 });
 
-var database = new DB({ force: false });
+var database = new DB({ force: true });
 var s3 = new S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
@@ -83,5 +83,5 @@ s3.listOjects({
         url: s3.getPublicUrlHttp(BUCKET, manifestKey),
         type: 'manifest'
     });
-    //return createDatabaseEntries(uploadVos);
+    return createDatabaseEntries(uploadVos);
 });
