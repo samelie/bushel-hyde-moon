@@ -1,0 +1,142 @@
+# Stinkdigital scss-lint configuration
+
+linters:
+  BemDepth:
+    severity: error
+    enabled: true
+
+  DisableLinterReason:
+    enabled: true
+
+  EmptyLineBetweenBlocks:
+    severity: error
+    ignore_single_line_blocks: false
+
+  HexLength:
+    enabled: false
+
+  ImportantRule:
+    severity: error
+
+  Indentation:
+    severity: error
+    character: tab
+    width: 1
+    allow_non_nested_indentation: true
+
+  LeadingZero:
+    style: include_zero
+
+  PropertySortOrder:
+    enabled: true
+    order:
+      - content
+      - z-index
+      - float
+      - clear
+      - position
+      - top
+      - right
+      - bottom
+      - left
+      - margin
+      - margin-top
+      - margin-right
+      - margin-bottom
+      - margin-left
+      - padding
+      - padding-top
+      - padding-right
+      - padding-bottom
+      - padding-left
+      - display
+      - flex
+      - flex-grow
+      - flex-shrink
+      - flex-basis
+      - flex-wrap
+      - flex-direction
+      - flex-flow
+      - justify-content
+      - align-items
+      - align-content
+      - align-self
+      - order
+      - list-style
+      - columns
+      - column-gap
+      - column-fill
+      - column-rule
+      - column-span
+      - column-count
+      - column-width
+      - width
+      - height
+      - overflow
+      - box-sizing
+      - box-shadow
+      - border
+      - clip-path
+      - visibility
+      - opacity
+      - cursor
+      - pointer-events
+      - outline
+      - resize
+      - font
+      - font-family
+      - font-size
+      - font-weight
+      - font-style
+      - color
+      - letter-spacing
+      - line-height
+      - text-align
+      - text-decoration
+      - text-transform
+      - text-indent
+      - text-shadow
+      - text-overflow
+      - vertical-align
+      - white-space
+      - word-spacing
+      - background
+      - background-color
+      - background-image
+      - background-repeat
+      - background-position
+      - background-size
+      - transform
+      - transform-origin
+      - animation
+      - animation-name
+      - animation-duration
+      - animation-delay
+      - animation-timing-function
+      - animation-direction
+      - animation-fill-mode
+      - animation-iteration-count
+      - animation-play-state
+      - transition
+      - transition-property
+      - transition-duration
+      - transition-delay
+      - transition-timing-function
+
+  PropertyUnits:
+    properties:
+      line-height: []
+      letter-spacing: ['em', 'rem']
+
+  SelectorFormat:
+    severity: error
+    convention: hyphenated_BEM
+
+  TransitionAll:
+    enabled: true
+
+  VariableForProperty:
+    enabled: true
+    properties:
+      - color
+      - background-color
