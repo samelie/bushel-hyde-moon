@@ -47,5 +47,25 @@ Utils.shuffle = function(a) {
     return a;
 };
 
+
+Utils.getRandom = (list) => {
+  let v = undefined;
+  while (!v) {
+    let r = Math.floor(Math.random() * list.length - 1);
+    v = list[r];
+  }
+  return v;
+};
+
+Utils.getIdFromItem = (item)=>{
+  if(_.isObject(item.id)){
+    return item.id.videoId;
+  }else if(_.isObject(item.snippet.resourceId)){
+    return item.snippet.resourceId.videoId;
+  }else{
+    return;
+  }
+};
+
 // Export
 export default Utils;

@@ -18,7 +18,8 @@ class AppRouter extends Marionette.AppRouter {
   routes() {
     return {
       '': 'onRootChanged',
-      '/': 'onRootChanged'
+      '/': 'onRootChanged',
+      'test': 'onRootChanged'
     }
   }
 
@@ -28,7 +29,7 @@ class AppRouter extends Marionette.AppRouter {
 
   start() {
     Backbone.history.start({
-      pushState: true
+      pushState: false
     });
   }
   onRootChanged(s) {
