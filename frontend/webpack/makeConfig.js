@@ -90,7 +90,7 @@ export default function makeConfig(isDevelopment) {
 			publicPath: `http://${serverIp}:${constants.HOT_RELOAD_PORT}/`
 		} : {
 			path: constants.BUILD_DIR,
-			filename: '[name]-[hash].js',
+			filename: '[name].js',
 			chunkFilename: '[name]-[chunkhash].js'
 		},
 		plugins: (() => {
@@ -98,7 +98,9 @@ export default function makeConfig(isDevelopment) {
 				new webpack.DefinePlugin({
 					'process.env': {
 						NODE_ENV: JSON.stringify(isDevelopment ? 'development' : 'production'),
-						SERVER_BASE: JSON.stringify(`http://127.0.0.1:9999/`),
+						SERVER_BASE: JSON.stringify(`http://localhost:9999/`),
+						//SERVER_BASE: JSON.stringify(`http://52.6.39.117/`), //good
+						//SERVER_BASE: JSON.stringify(`http://moon.mars.wtf/`),
 						//SERVER_BASE: JSON.stringify(`http://${serverIp}:9999/`),
 						IS_BROWSER: true
 					}
@@ -112,7 +114,7 @@ export default function makeConfig(isDevelopment) {
 			else plugins.push(
 				// Render styles into separate cacheable file to prevent FOUC and
 				// optimize for critical rendering path.
-				new ExtractTextPlugin('app-[hash].css', {
+				new ExtractTextPlugin(isDevelopment ?'app-[hash].css' : 'app.css', {
 					allChunks: true
 				}),
 				new AssetsPlugin({
@@ -144,12 +146,18 @@ export default function makeConfig(isDevelopment) {
 			root: constants.ABSOLUTE_BASE,
       alias:{
         underscore: 'lodash',
+        'echonestService': require.resolve(path.join(constants.SRC_DIR, 'client/service/echonestService.js')),
+        'youtubeService': require.resolve(path.join(constants.SRC_DIR, 'client/service/youtubeService.js')),
+        'spotifyService': require.resolve(path.join(constants.SRC_DIR, 'client/service/spotifyService.js')),
+        'popupService': require.resolve(path.join(constants.SRC_DIR, 'client/service/popupService.js')),
         'serverService': require.resolve(path.join(constants.SRC_DIR, 'client/service/serverService.js')),
+        'knowledgeService': require.resolve(path.join(constants.SRC_DIR, 'client/service/knowledgeService.js')),
         'shim': require.resolve(path.join(constants.SRC_DIR, 'client/common/shim.js')),
         'utils': require.resolve(path.join(constants.SRC_DIR, 'client/common/utils.js')),
         'channel': require.resolve(path.join(constants.SRC_DIR, 'client/common/channel.js')),
         'playlist': require.resolve(path.join(constants.SRC_DIR, 'client/common/playlist.js')),
         'sonoPlayer': require.resolve(path.join(constants.SRC_DIR, 'client/common/sonoPlayer.js')),
+        'session': require.resolve(path.join(constants.SRC_DIR, 'client/common/session.js')),
         'emitter': require.resolve(path.join(constants.SRC_DIR, 'client/common/emitter.js'))
       }
 		}
