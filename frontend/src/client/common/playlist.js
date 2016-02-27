@@ -8,7 +8,9 @@ const Playlist = (() => {
         let urls = [];
         _.each(data, (obj)=>{
             if(obj.type === type){
-                urls.push(obj.url);
+                if(obj.url.indexOf('-r') <0){
+                    urls.push(obj.url);
+                }
             }
         });
         return urls;

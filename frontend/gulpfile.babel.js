@@ -84,6 +84,6 @@ gulp.task('index', () => {
 		.pipe(gulp.dest(`build/`));
 });
 
-gulp.task('audio', require('./tasks/audio_task.js').convert);
+//gulp.task('audio', require('./tasks/audio_task.js').convert);
 
 gulp.task('default', ['server']);

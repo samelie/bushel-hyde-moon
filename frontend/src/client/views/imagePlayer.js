@@ -44,6 +44,14 @@ function ImageCanvas(options) {
     _draw(images[1], ctx2);
   };
 
+  images[0].onerror = function() {
+    nextImage(images[0]);
+  };
+
+  images[1].onerror = function() {
+    nextImage(images[1]);
+  };
+
   function _draw(image, ctx) {
 
     image.loading = false;
@@ -110,6 +118,7 @@ function ImageCanvas(options) {
     el.loading = true;
     el.crossOrigin = "anonymous";
     el.src = _imageSources[_imageIndex];
+    console.log(el.src);
   }
 
   function getActiveEl() {
