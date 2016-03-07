@@ -39,6 +39,13 @@ class MediaPlaylist {
     } else {
       this._init();
     }
+
+    this.options.videoStartedSignal.add((currentVo) => {
+      this.currentVo = currentVo;
+      Channel.trigger('videostarted', this._getTitleFromId(currentVo.videoId));
+    });
+
+    Channel.on('addrelatedtocurrent', this._getRelatedTo, this);
   }
 
   _init() {
@@ -48,7 +55,7 @@ class MediaPlaylist {
             playlistId: id
           })
           .then(results => {
-            this.youtubeItems = this.youtubeItems.concat(results.items);
+            this.youtubeItems = [...this.youtubeItems, ...results.items]
             return Q.map(this.youtubeItems, (item) => {
               let vId = Utils.getIdFromItem(item);
               return this._getSidx(vId);
@@ -61,7 +68,7 @@ class MediaPlaylist {
           });
       }, {
         concurrency: 1
-      }).then((referenceIndexs)=>{
+      }).then((referenceIndexs) => {
         this._start();
       });
     }
@@ -69,6 +76,23 @@ class MediaPlaylist {
 
   _start() {
     this._getNext();
+  }
+
+  _getRelatedTo() {
+    YoutubeService.relatedToVideo({
+        part: 'snippet',
+        id: this.currentVo.videoId,
+        order: 'relevance',
+      })
+      .then(data => {
+        this.youtubeItems = [...this.youtubeItems, ...data.items]
+        var item = Utils.getRandom(data.items);
+        var vId = Utils.getIdFromItem(item);
+        return this._getSidx(vId).then((sidx)=>{
+          this.sidxResults = [...this.sidxResults, sidx];
+          return this._createReferenceIndexFromResults([sidx]);
+        });
+      });
   }
 
   _getNext() {
@@ -90,6 +114,16 @@ class MediaPlaylist {
   //     }
   //     PlaylistUtils.mixSidxReferences(this.sidxIndexReferences, this.playlistItemIndex, references);
   // }
+
+  _getTitleFromId(vId) {
+    var ytItem;
+    _.each(this.youtubeItems, (item) => {
+      if (Utils.getIdFromItem(item) === vId) {
+        ytItem = item;
+      }
+    });
+    return ytItem;
+  }
 
   _createReferenceIndexFromResults(results) {
     _.each(results, (item) => {

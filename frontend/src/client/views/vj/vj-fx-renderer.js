@@ -113,11 +113,11 @@ class Renderer {
       uniforms: this.uniforms
     };
 
-    let videoMaterial = new THREE.ShaderMaterial(parameters);
-    // let videoMaterial = new THREE.MeshBasicMaterial({
-    //   map: this.layer1.fbo
-    //     //color:0xff0000
-    // });
+    //let videoMaterial = new THREE.ShaderMaterial(parameters);
+    let videoMaterial = new THREE.MeshBasicMaterial({
+      map: this.layer1.fbo
+        //color:0xff0000
+    });
 
     let quadgeometry = new THREE.PlaneBufferGeometry(VIDEO_WIDTH, VIDEO_HEIGHT, 2, 2);
     this.mesh = new THREE.Mesh(quadgeometry, videoMaterial);

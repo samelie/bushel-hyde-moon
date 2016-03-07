@@ -125,7 +125,7 @@ class VjMediaSource {
         let ct =this.videoElement.currentTime;
         if(ct > this.currentVo.startTime && !this.newVoStarted){
             this.newVoStarted = true;
-            this.videoStartedSignal.dispatch();
+            this.videoStartedSignal.dispatch(this.currentVo);
         }
         if (ct >= (this.totalDuration - (this.currentVo.duration * BUFFER_MARGIN_2))) {
             if (!this.requestingNewVo) {

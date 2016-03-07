@@ -24,94 +24,91 @@ const DR_DOG_PLAYLIST = "PL60A35E06A9EA1BFB";
 // Define
 class AudioView extends Marionette.LayoutView {
 
-    template() {
-        return template;
+  template() {
+    return template;
+  }
+
+  ui() {
+    return {
+      videoEl: 'audio'
     }
+  }
 
-    ui() {
-        return {
-            videoEl: 'audio'
-        }
+  events() {
+    return {}
+  }
+
+  regions() {
+    return {
+      centerRegion: '[data-region="center"]'
     }
+  }
 
-    events() {
-        return {}
+  initialize() {
+    // auto render
+    Channel.on('audio:playlist:set', this.setPlaylist, this);
+    Channel.on('mediasource:nextvideo', (id, addVo) => {
+      //this._getNext(id, addVo);
+    });
+
+
+  }
+
+  onRender() {
+
+    //this.sythAudio = new SythAudio();
+  }
+
+  onShow() {
+    this.audioSource = new VjMediaSource(this.ui.videoEl[0]);
+    this.audioSono = new AudioYoutubeSono(this.ui.videoEl[0]);
+
+    this.audioSource.endingSignal.add(() => {
+      this._getNext();
+    });
+
+    //this.boundUpdate = this.update.bind(this);
+    //window.requestAnimationFrame(this.boundUpdate);
+  }
+
+  setPlaylist(playlist) {
+    this.playlistIndex = -1;
+    this.playlist = playlist;
+    this._getNext();
+  }
+
+  _getPlaylistVideos() {
+
+  }
+
+  getAmplitude() {
+    if (this.audioSono) {
+      return this.audioSono.getAmplitude();
     }
+  }
 
-    regions() {
-        return {
-            centerRegion: '[data-region="center"]'
-        }
+  _getNext() {
+    this.playlistIndex++;
+    if (!this.playlist) {
+      return;
     }
+    var vId = this.playlist[this.playlistIndex].id;
+    return ServerService.getSidx(vId, {
+      chooseBest: true,
+      audioonly: true
+    }).then((results) => {
+      let vo = VjUtils.createVo(results, {
+        all: true
+      });
+      //this.audioSono.analyzeAudio(vo);
+      console.log(vo);
+      this.audioSource.addVo(vo);
+    }).catch(err => {
+      console.log(err)
+    });
+  }
 
-    initialize() {
-        // auto render
-        Channel.on('audio:playlist:set', this.setPlaylist, this);
-        Channel.on('mediasource:nextvideo', (id, addVo) => {
-            //this._getNext(id, addVo);
-        });
-
-
-    }
-
-    onRender() {
-
-        //this.sythAudio = new SythAudio();
-    }
-
-    onShow() {
-        this.audioSource = new VjMediaSource(this.ui.videoEl[0]);
-        //this.audioSono = new AudioYoutubeSono(this.ui.videoEl[0]);
-
-        this.audioSource.endingSignal.add(() => {
-            this._getNext();
-        });
-
-
-        //this.boundUpdate = this.update.bind(this);
-        //window.requestAnimationFrame(this.boundUpdate);
-    }
-
-    setPlaylist(playlist) {
-        this.playlistIndex = -1;
-        this.playlist = playlist;
-        this._getNext();
-    }
-
-    // update(){
-    //   this.audioSono.update();
-    //   window.requestAnimationFrame(this.boundUpdate);
-    // }
-
-    _getPlaylistVideos() {
-
-    }
-
-    getAmp() {
-        return this.audioSono.getAmplitude();
-    }
-
-    _getNext() {
-        this.playlistIndex++;
-        if (!this.playlist) {
-            return;
-        }
-        var vId = this.playlist[this.playlistIndex].id;
-        return ServerService.getSidx(vId, {
-            chooseBest: true,
-            audioonly: true
-        }).then((results) => {
-            let vo = VjUtils.createVo(results, {
-                all: true
-            });
-            //this.audioSono.analyzeAudio(vo);
-            this.audioSource.addVo(vo);
-        }).catch(err => {
-            console.log(err)
-        });
-    }
-
-    onDestroy() {}
+  onDestroy() {}
 
 
 };

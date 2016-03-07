@@ -61,6 +61,8 @@ class AppView extends Marionette.LayoutView {
     Channel.on('spotify:login:success', () => {
       SpotifyService.getMe().then(me => {
         YoutubeService.getYoutubeAudioTracks(SPOTIFY_PLAYLIST).then((results) => {
+          this.audioView = new AudioView();
+          this.audioRegion.show(this.audioView);
           Channel.trigger('audio:playlist:set', results);
         }).done();
         //SpotifyService.getUserPlaylists().then((r) => {console.log(r);})
@@ -70,8 +72,12 @@ class AppView extends Marionette.LayoutView {
     // this.searchRegion.show(new SearchView());
 
     Channel.on('youtube:login:success', (auth) => {
-      this.youtubeRegion.show(new VjView());
+      this.vjView = new VjView();
+      this.youtubeRegion.show(this.vjView);
     });
+
+    this.boundUpdate = this.update.bind(this);
+    this.boundUpdate();
 
   }
 
@@ -80,12 +86,18 @@ class AppView extends Marionette.LayoutView {
   }
 
   onShow() {
-    this.audioView = new AudioView();
-    this.audioRegion.show(this.audioView);
-    this.boundUpdate = this.update.bind(this);
+
   }
 
   update() {
+    if (this.audioView) {
+      //let amp = this.audioView.getAmplitude();
+      //console.log(amp);
+    }
+
+    if (this.vjView) {
+      this.vjView.update();
+    }
     window.requestAnimationFrame(this.boundUpdate);
   }
 

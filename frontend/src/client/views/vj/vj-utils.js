@@ -51,17 +51,11 @@ Utils.createVo = (data, options = {}) => {
   var videoVo = {};
   videoVo['url'] = data['url'];
   videoVo['byteRange'] = sRef['mediaRange'].split('-')[0] + '-' + brEnd;
-  videoVo['chunks'] = [{
-    range:sRef['mediaRange'].split('-')[0] + '-' + brEnd,
-    rangeMax:brMax,
-    duration:duration
-  }];
-  videoVo['byteRangeMax'] = brMax;
   videoVo['byteLength'] = size;
   videoVo['codecs'] = data['codecs'];
   videoVo['firstOffset'] = data.sidx['firstOffset'];
   videoVo['indexRange'] = data['indexRange'];
-  videoVo['indexRangeMax'] = Number(videoVo['indexRange'].split('-')[1]) + 1;
+  videoVo['indexLength'] = Number(videoVo['indexRange'].split('-')[1]) + 1;
   videoVo['timestampOffset'] = sRef['startTimeSec'];
   videoVo['duration'] = duration;
   videoVo['id'] = options.videoId;
@@ -69,6 +63,7 @@ Utils.createVo = (data, options = {}) => {
 }
 
 Utils.getReferenceVo = (item, refIndex)=>{
+  console.log(item);
   let sidx = item.sidx;
   let ref = sidx.references[refIndex];
   let vo = _.clone(Utils.vo);

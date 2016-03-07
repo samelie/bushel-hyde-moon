@@ -7,8 +7,8 @@ function ImageCanvas(options = {}) {
   var _transitionValue = 0;
   var _transitionDirection = 1;
   var MS = 1000 / 60;
-  var IMAGE_TIME = 500;
-  var TRANSITION_TIME = 1000;
+  var IMAGE_TIME = 100;
+  var TRANSITION_TIME = 4000;
 
   var W = 659;
   var H = 480;

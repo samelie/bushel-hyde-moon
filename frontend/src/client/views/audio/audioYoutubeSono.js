@@ -16,38 +16,19 @@ class AudioYoutubeSono {
     // gainNode.connect(this.context.destination);
     //console.log(source)
     this.sound = sono.createSound(this.mediaEl);
-    this.beatDetector = new BeatDetector(this.sound, (b) => {
-      console.log(b)
-    });
-    this.analyser = this.sound.effect.analyser(NUM_SAMPLES);
+    // this.beatDetector = new BeatDetector(this.sound, (b) => {
+    //   console.log(b)
+    // });
+    //console.log(this.sound);
+   // this.analyser = this.sound.effect.analyser(NUM_SAMPLES);
     //Analyzer
     //this.sound.play();
     //  this.sound.playbackRate = 0.5;
     //	console.log(this.sound)
   }
 
-  update() {
-    
-    console.log(this._sum);
-    //this.beatDetector.update();
-  }
-
   getAmplitude(){
-  	let f = this.analyser.getFrequencies();
-
-    let sum = 0;
-    for (let i = 0; i < f.length; i++) {
-      sum += f[i]
-    }
-
-    sum /= f.length;
-    return sum / NUM_SAMPLES_HALF;
-  }
-
-  analyzeAudio(vo) {
-    // Analyzer.getBpm(vo).then(data =>{
-    // 	console.log(data);
-    // })
+    return this.sound.getAmplitude();
   }
 }
 

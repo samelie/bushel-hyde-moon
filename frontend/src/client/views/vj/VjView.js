@@ -31,13 +31,15 @@ class VjView extends Marionette.ItemView {
   ui() {
     return {
       btn: '.btn-primary',
-      threeEl: '#three'
+      threeEl: '#three',
+      videoInfo: '.videoInfo'
     }
   }
 
   events() {
     return {
-      'click @ui.btn': 'btnClick'
+      'click @ui.btn': 'btnClick',
+      'mousemove': 'onMouseMove'
     }
   }
 
@@ -46,36 +48,45 @@ class VjView extends Marionette.ItemView {
   }
 
   initialize() {
+    this.gettingRelated = false;
     window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth;
+      this.windowHeight = window.innerHeight;
       if (this.vj) {
-        let w = window.innerWidth;
-        let h = window.innerHeight;
-        this.vj.onWindowResize(w, h);
-        this.renderer.onWindowResize(w,h);
+        this.vj.onWindowResize(this.windowWidth, this.windowHeight);
+        this.renderer.onWindowResize(this.windowWidth, this.windowHeight);
       }
     });
+
+    Channel.on('videostarted', (ytItem) => {
+      this.gettingRelated = false;
+      this.ui.videoInfo[0].innerHTML = ytItem.snippet.title;
+    }, this);
 
     this.boundUpdate = this._update.bind(this);
   }
 
   onShow() {
     this.vj = new VJManager(this.el, {
-            count: 1,
-            playlists: [PLAY_VJ],
-            quality:{
-                chooseBest:true,
-                resolution:'360p'
-            },
-            verbose: false
-        });
+      count: 1,
+      playlists: [PLAY_VJ],
+      quality: {
+        chooseBest: true,
+        resolution: '360p'
+      },
+      verbose: false
+    });
 
-     this.renderer = new VjRenderer(this.ui.threeEl[0]);
+    this.renderer = new VjRenderer(this.ui.threeEl[0]);
 
     this.renderer.setTextures([
       this.vj.getCanvasAt(0)
     ]);
 
-    this.boundUpdate();
+    this.windowWidth = window.innerWidth;
+    this.windowHeight = window.innerHeight;
+
+    //this.boundUpdate();
     //this.vj = new VJ(this.el, this.ui.threeEl[0]);
     // this.imagePlayer = new ImagePlayer({
     //   el: this.el
@@ -96,6 +107,24 @@ class VjView extends Marionette.ItemView {
     //     this.defaultPlaylistItems = results;
     //     this._getNext();
     //   });
+  }
+
+  onMouseMove(e) {
+    if(this.gettingRelated){
+      return;
+    }
+    let y = e.pageY / this.windowHeight;
+    let x = e.pageX / this.windowWidth;
+    if(y > .8 && x < 0.2){
+      this.gettingRelated = true;
+      console.log("Here");
+       Channel.trigger('addrelatedtocurrent');
+    }
+  }
+
+  update() {
+    this.vj.update();
+    this.renderer.update();
   }
 
   _update() {

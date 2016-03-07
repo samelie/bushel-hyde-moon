@@ -33,6 +33,9 @@ class VjManager {
     this._createElements(options.count);
 
     this._update();
+
+    this.options.videoStartedSignal.add(()=>{
+    });
   }
 
   _createElements(count) {
