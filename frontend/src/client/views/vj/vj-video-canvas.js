@@ -4,34 +4,26 @@ const W = 640;
 const H = 360;
 
 
-class VideoCanvas {
+class VideoCanvas{
 
-  constructor(el) {
+  constructor(el, options) {
+    this.options = options;
   	this.videoElement = el;
+    this.videoWidth;
+    this.videoHeight;
+    this.fboWidth;
+    this.fboHeight;
   	this.windowW = window.innerWidth;
   	this.windowH = window.innerHeight;
   	this.containerRatio = W / H;
 
+    this.options.videoStartedSignal.add(this._setCanvasResolution.bind(this));
+
     this._init();
   }
 
-
-  _createCanvas(w, h) {
-    var c = document.createElement('canvas');
-    c.width = w;
-    c.height = h;
-    return c;
-  }
-
-  _init(){
-  	this.frameBuffer = this._createCanvas(W, H);
-  	this.bufferCtx = this.frameBuffer.getContext("2d");
-    document.body.appendChild(this.frameBuffer);
-  }
-
-
-  update(){
-  	this.videoWidth = this.videoElement.videoWidth || W;
+  _setCanvasResolution(){
+    this.videoWidth = this.videoElement.videoWidth || W;
     this.videoHeight = this.videoElement.videoHeight || H;
 
     let elRatio = this.videoWidth / this.videoHeight;
@@ -51,14 +43,29 @@ class VideoCanvas {
       y = (H - this.videoHeight * scale) * 0.5 / scale;
     }
 
-    let newVideoWidth = this.videoWidth * scale;
-    let newVideoHeight = this.videoHeight * scale;
+    this.fboWidth = this.videoWidth * scale;
+    this.fboHeight = this.videoHeight * scale;
 
-    this.frameBuffer.width = newVideoWidth;
-    this.frameBuffer.height = newVideoHeight;
+    this.frameBuffer.width = this.fboWidth;
+    this.frameBuffer.height = this.fboHeight;
+  }
 
+
+  _createCanvas(w, h) {
+    var c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    return c;
+  }
+
+  _init(){
+  	this.frameBuffer = this._createCanvas(W, H);
+  	this.bufferCtx = this.frameBuffer.getContext("2d");
+  }
+
+  update(){
     this.bufferCtx.clearRect(0, 0,this.windowW, this.windowH);
-    this.bufferCtx.drawImage(this.videoElement, 0, 0, this.videoWidth, this.videoHeight, 0, 0, newVideoWidth, newVideoHeight);
+    this.bufferCtx.drawImage(this.videoElement, 0, 0, this.videoWidth, this.videoHeight, 0, 0, this.fboWidth, this.fboHeight);
   }
 
   getCanvas(){

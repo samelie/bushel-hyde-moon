@@ -8,6 +8,7 @@ import RenderPass from '../post/RenderPass';
 import ShaderPass from '../post/ShaderPass';
 
 import basicVert from "./vert/basic.vert";
+import simpleFrag from "./frag/simple.frag";
 import mixFrag from './frag/mix.frag';
 import blendFrag from "./frag/blend.frag";
 import colorFrag from "./frag/color.frag";
@@ -35,6 +36,16 @@ const Shaders =  {
       }
     }]),
     fragmentShader: mixFrag,
+    vertexShader: basicVert
+  },
+  'simpleFrag': {
+    uniforms: THREE.UniformsUtils.merge([{
+      "tDiffuse": {
+        type: "t",
+        value: null
+      }
+    }]),
+    fragmentShader: simpleFrag,
     vertexShader: basicVert
   },
   'blend': {

@@ -11,6 +11,7 @@ import Channel from 'channel';
 
 import LoginView from './login/LoginView';
 import VjView from './vj/VjView';
+import AudioView from './audio/audioView';
 
 import SpotifyService from 'spotifyService';
 import YoutubeService from 'youtubeService';
@@ -45,24 +46,33 @@ class AppView extends Marionette.LayoutView {
 
   initialize() {
     // auto render
-    Channel.on(Channel.VJ_START, this.onVjStart, this);
+    // Channel.on(Channel.VJ_START, this.onVjStart, this);
 
-    Channel.on('spotify:login:success', (auth) => {
-      SpotifyService.setAccessToken(auth.accessToken);
+    // Channel.on('spotify:login:success', (auth) => {
+    //   SpotifyService.setAccessToken(auth.accessToken);
+    //   SpotifyService.getMe().then(me => {
+    //     console.log(me);
+    //     YoutubeService.getYoutubeAudioTracks(SPOTIFY_PLAYLIST).then((results)=>{
+    //       Channel.trigger('audio:playlist:set', results);
+    //     }).done();
+    //   });
+    // });
+
+    Channel.on('spotify:login:success', () => {
       SpotifyService.getMe().then(me => {
-        console.log(me);
-        YoutubeService.getYoutubeAudioTracks(SPOTIFY_PLAYLIST).then((results)=>{
+        YoutubeService.getYoutubeAudioTracks(SPOTIFY_PLAYLIST).then((results) => {
           Channel.trigger('audio:playlist:set', results);
         }).done();
+        //SpotifyService.getUserPlaylists().then((r) => {console.log(r);})
       });
     });
 
+    // this.searchRegion.show(new SearchView());
+
     Channel.on('youtube:login:success', (auth) => {
-      YoutubeService.userPlaylists().then((results)=>{
-        console.log(results);
-        this.showUserPlaylists(results);
-      });
+      this.youtubeRegion.show(new VjView());
     });
+
   }
 
   onRender() {
@@ -70,6 +80,8 @@ class AppView extends Marionette.LayoutView {
   }
 
   onShow() {
+    this.audioView = new AudioView();
+    this.audioRegion.show(this.audioView);
     this.boundUpdate = this.update.bind(this);
   }
 
@@ -77,9 +89,9 @@ class AppView extends Marionette.LayoutView {
     window.requestAnimationFrame(this.boundUpdate);
   }
 
-  showUserPlaylists(playlists){
-      this.youtubeRegion.show(new VjView());
-      //this.youtubeRegion.show(new YoutubeView(playlists.items));
+  showUserPlaylists(playlists) {
+
+    //this.youtubeRegion.show(new YoutubeView(playlists.items));
   }
 
   onDestroy() {}

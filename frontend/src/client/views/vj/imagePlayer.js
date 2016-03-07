@@ -1,10 +1,13 @@
 import Emitter from 'emitter';
 
-function ImageCanvas(options) {
+function ImageCanvas(options = {}) {
+
+  var el = options.el || document.body;
+
   var _transitionValue = 0;
   var _transitionDirection = 1;
   var MS = 1000 / 60;
-  var IMAGE_TIME = 200;
+  var IMAGE_TIME = 500;
   var TRANSITION_TIME = 1000;
 
   var W = 659;
@@ -30,9 +33,6 @@ function ImageCanvas(options) {
   var ctx2 = canvas[1].getContext("2d");
 
   var images = [_createImage(), _createImage()];
-  document.body.appendChild(canvas[0]);
-  document.body.appendChild(canvas[1]);
-
 
   images[0].onload = function() {
     _loading[0] = false;
@@ -109,6 +109,9 @@ function ImageCanvas(options) {
     _imageIndex++;
     el.loading = true;
     el.crossOrigin = "anonymous";
+    if(!_imageSources){
+      return;
+    }
     el.src = _imageSources[_imageIndex];
   }
 

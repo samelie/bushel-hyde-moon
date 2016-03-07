@@ -9,9 +9,9 @@ const BUFFER_MARGIN = 3;
 const BUFFER_MARGIN_2 = 0.7;;
 
 class VjMediaSource {
-    constructor(el, id) {
+    constructor(el, options = {}) {
+        this.options = options;
         this.el = el;
-        this.id = id;
         if (!MediaSource) {
             throw new Error('NO MEDIASOURCE!');
         }
@@ -21,6 +21,7 @@ class VjMediaSource {
         //playback info
         this.segDuration = 0,
             this.totalDuration = 0,
+            this.newVoStarted = false,
             this.requestingNewVo = false,
             this.playOffset = 0,
             this.segmentIndex = 0,
@@ -38,8 +39,10 @@ class VjMediaSource {
         this._effects;
         this.currentVideoId;
 
-        this.endingSignal = new Signals();
-        this.endedSignal = new Signals();
+        this.readySignal = this.options.readySignal || new Signals();
+        this.videoStartedSignal = this.options.videoStartedSignal || new Signals();
+        this.endingSignal = this.options.endingSignal || new Signals();
+        this.endedSignal = this.options.endedSignal || new Signals();
 
         this.videoElement = el;
 
@@ -47,11 +50,8 @@ class VjMediaSource {
         this.onBufferUpdateEndBound = this.onBufferUpdateEnd.bind(this);
         this.onInitAddedBound = this._onInitAdded.bind(this);
         this.onTimeUpdateBound = this._onTimeUpdate.bind(this);
-
-
-        this.mediaSource = new MediaSource();
-        let url = URL.createObjectURL(this.mediaSource);
-        this.videoElement.src = url;
+        this.onSourceOpenBound = this._onSourceOpen.bind(this);
+        this.onSourceErrorBound = this._onSourceError.bind(this);
 
         this.videoElement.addEventListener("timeupdate", this.onTimeUpdateBound, false);
         this.videoElement.addEventListener("ended", this._onVideoEnded, false);
@@ -60,31 +60,43 @@ class VjMediaSource {
                 console.log("Loaded data");
             }
         });
+
         this.videoElement.addEventListener("playing", () => {
             if (VERBOSE) {
                 console.log("Playing");
             }
         });
+
         this.videoElement.addEventListener("waiting", () => {
             if (VERBOSE) {
                 console.log("waiting");
             }
         });
+        this._newMediaSource();
+        this.waitingLine = [];
+    }
 
-        this.mediaSource.addEventListener('error', this._onSourceError, false);
-        this.mediaSource.addEventListener('sourceopen', this._onSourceOpen, false);
-
-        this.xhr;
+    _newMediaSource() {
+        this.starting = true;
+        this.mediaSource = new MediaSource();
+        let url = URL.createObjectURL(this.mediaSource);
+        this.videoElement.src = url;
+        this.mediaSource.addEventListener('error', this.onSourceErrorBound, false);
+        this.mediaSource.addEventListener('sourceopen', this.onSourceOpenBound, false);
     }
 
     _onSourceError(e) {}
 
     _onSourceOpen(e) {
         this.starting = false;
+        this.readySignal.dispatch();
+        if (this.waitingLine.length) {
+            this.addVo(this.waitingLine.pop());
+        }
     }
 
     newBufferSouce(codecs) {
-        this.mediaSource.removeEventListener('sourceopen', this._onSourceOpen);
+        this.mediaSource.removeEventListener('sourceopen', this.onSourceOpenBound);
         this.currentCodec = codecs;
         this.sourceBuffer = this.mediaSource.addSourceBuffer('video/mp4; codecs="' + codecs + '"');
         this.sourceBuffer.addEventListener('updatestart', this.onBufferUpdateStartBound);
@@ -110,31 +122,35 @@ class VjMediaSource {
     }
 
     _onTimeUpdate() {
-        if (this.videoElement.currentTime >= (this.totalDuration - (this.currentChunk.duration * BUFFER_MARGIN_2))) {
+        let ct =this.videoElement.currentTime;
+        if(ct > this.currentVo.startTime && !this.newVoStarted){
+            this.newVoStarted = true;
+            this.videoStartedSignal.dispatch();
+        }
+        if (ct >= (this.totalDuration - (this.currentVo.duration * BUFFER_MARGIN_2))) {
             if (!this.requestingNewVo) {
                 this.requestingNewVo = true;
-                console.log(this.currentVo.chunks.length);
-                if (this.currentVo.chunks.length > 0) {
-                    this._addChunk(this.currentVo.chunks.shift());
-                } else {
-                    if (VERBOSE) {
-                        console.log(this.id, "Requesting new vo");
-                    }
-                    this.endingSignal.dispatch();
+                if (VERBOSE) {
+                console.log(this.id, "Requesting new vo");
                 }
+                this.endingSignal.dispatch();
             }
         }
-        // if (this.videoElement.currentTime > this.totalDuration - 0.5) {
-        //   if (!this.ended) {
-        //     this.ended = true;
-        //     this.endedSignal.dispatch();
-        //   }
-        // }
+        if (ct > this.totalDuration - 0.5) {
+            if (!this.ended) {
+                this.ended = true;
+                this.endedSignal.dispatch();
+            }
+        }
     }
 
     ////-----------------
     //API
     ////-----------------
+
+    getReadyState() {
+        return this.mediaSource.readyState;
+    }
 
     setCurrentVideoId(id) {
         this.currentVideoId = id;
@@ -146,21 +162,32 @@ class VjMediaSource {
 
 
     addVo(currentVo) {
-        this.currentVo = currentVo;
         if (VERBOSE) {
             console.log("CurrentCodec: ", this.currentCodec, "new codec:", currentVo.codecs, this.sourceBuffer);
         }
-        console.log(this.currentVo);
 
-        if (!this.sourceBuffer) {
-            this.newBufferSouce(this.currentVo.codecs);
-        } else if (this.currentCodec !== this.currentVo.codecs) {
-            this._resetMediasource();
-            //this.addVo(currentVo);
+        if (this.currentCodec !== currentVo.codecs) {
+            console.warn('The codecs arnt equal');
+            if (this.sourceBuffer) {
+                //this.waitingLine.unshift(currentVo);
+                //this._resetMediasource();
+                //this._newMediaSource();
+                this._readyToAdd(currentVo);
+            } else {
+                this.newBufferSouce(currentVo.codecs);
+                this._readyToAdd(currentVo);
+            }
+        } else {
+            if (!this.sourceBuffer) {
+                this.newBufferSouce(currentVo.codecs);
+            }
+            this._readyToAdd(currentVo);
         }
-        
-        this.setCurrentVideoId(this.currentVo.id);
-        this._addChunk(this.currentVo.chunks.shift());
+    }
+
+    _readyToAdd(currentVo) {
+        this.setCurrentVideoId(currentVo.id);
+        this._addSegment(currentVo);
         this.videoElement.play();
         this.mediaSource.duration = this.totalDuration;
     }
@@ -180,23 +207,39 @@ class VjMediaSource {
         this.updatedStarted = false;
     }
 
-    _setNewTimestamdOffset() {
-        let off = 0;
-        if (this.sourceBuffer.buffered.length > 0) {
-            off = this.sourceBuffer.buffered.end(this.sourceBuffer.buffered.length - 1);
+    _addSegment(currentVo) {
+        this.newVoStarted = false;
+        this.currentVo = currentVo;
+        this.currentVo.startTime = this.totalDuration;
+        this.totalDuration += this.currentVo.duration;
+        let formData = new FormData();
+        if (VERBOSE) {
+            console.log(this.currentVo.byteRange, this.currentVo.byteLength, this.currentVo.duration);
         }
-        console.log(off);
-        this._trySettingOffset(off);
-        try {
-            this.sourceBuffer.timestampOffset -= this.currentVo['timestampOffset'];
-        } catch (e) {
-            this._resetMediasource();
-        }
+        formData.append('url', this.currentVo.url);
+        formData.append('byteRange', this.currentVo.byteRange);
+        formData.append('byteLength', this.currentVo.byteLength);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', process.env.SERVER_BASE + 'getVideo', true);
+        xhr.responseType = 'arraybuffer';
+        xhr.send(formData);
+        xhr.addEventListener("readystatechange", () => {
+            if (xhr.readyState == xhr.DONE) {
+                this.segResp = new Uint8Array(xhr.response);
+                let off = 0;
+                if (this.sourceBuffer.buffered.length > 0) {
+                    off = this.sourceBuffer.buffered.end(this.sourceBuffer.buffered.length - 1);
+                }
+                this._trySettingOffset(off);
+            }
+        });
     }
 
     _trySettingOffset(off) {
         try {
             this.sourceBuffer.timestampOffset = off || 0;
+            this._makeInitialRequest(this.currentVo);
         } catch (e) {
             if (VERBOSE) {
                 console.log("Error _trySettingOffset");
@@ -205,49 +248,20 @@ class VjMediaSource {
         }
     }
 
-
-    _addChunk(chunk) {
-        console.log(chunk);
-        this.currentChunk = chunk;
-        this.totalDuration += this.currentChunk.duration;
-        let formData = new FormData();
-        if (VERBOSE) {
-            console.log(this.id, this.currentChunk.byteRange, this.currentChunk.byteLength, this.currentChunk.duration);
-        }
-        formData.append('url', this.currentVo.url);
-        formData.append('byteRange', this.currentChunk.byteRange);
-        formData.append('byteRangeMax', this.currentChunk.byteLength);
-
-        this.xhr = new XMLHttpRequest();
-        this.xhr.open('POST', process.env.SERVER_BASE + 'getVideo', true);
-        this.xhr.responseType = 'arraybuffer';
-        this.xhr.send(formData);
-        this.xhr.addEventListener("readystatechange", () => {
-            if (this.xhr.readyState == this.xhr.DONE) {
-                console.log("Finsihed");
-                this.segResp = new Uint8Array(this.xhr.response);
-                let off = 0;
-                if (this.sourceBuffer.buffered.length > 0) {
-                    off = this.sourceBuffer.buffered.end(this.sourceBuffer.buffered.length - 1);
-                }
-                this._makeInitialRequest();
-            }
-        });
-    }
-
     _makeInitialRequest() {
-        this.xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         let formData = new FormData();
         formData.append('url', this.currentVo.url);
         formData.append('indexRange', this.currentVo.indexRange);
-        formData.append('indexRangeMax', this.currentVo.indexRangeMax);
-        this.xhr.open('POST', process.env.SERVER_BASE + 'getVideoIndex', true);
-        this.xhr.send(formData);
-        this.xhr.responseType = 'arraybuffer';
+        formData.append('indexLength', this.currentVo.indexLength);
+        xhr.open('POST', process.env.SERVER_BASE + 'getVideoIndex', true);
+        xhr.send(formData);
+        xhr.responseType = 'arraybuffer';
         try {
-            this.xhr.addEventListener("readystatechange", () => {
-                if (this.xhr.readyState == this.xhr.DONE) { // wait for video to load
-                    this._addInitReponse(new Uint8Array(this.xhr.response));
+            xhr.addEventListener("readystatechange", () => {
+                if (xhr.readyState == xhr.DONE) { // wait for video to load
+                    console.log("Addit init");
+                    this._addInitReponse(new Uint8Array(xhr.response));
                 }
             }, false);
         } catch (e) {
@@ -256,16 +270,15 @@ class VjMediaSource {
     }
 
     _addInitReponse(initResp) {
-        console.log(this.mediaSource.readyState);
         if (this.mediaSource.readyState === 'open' && this.sourceBuffer) {
             this.sourceBuffer.removeEventListener('updatestart', this.onBufferUpdateStartBound);
             this.sourceBuffer.removeEventListener('updateend', this.onBufferUpdateEndBound);
             this.sourceBuffer.addEventListener('updateend', this.onInitAddedBound);
             try {
                 if (VERBOSE) {
+                    console.log("Init response added: ", this.currentVideoId);
                 }
                 this.sourceBuffer.appendBuffer(initResp);
-                console.log("Init response added: ", this.currentVideoId);
             } catch (e) {
                 if (VERBOSE) {
                     console.log(e);
@@ -276,14 +289,26 @@ class VjMediaSource {
     }
 
     _onInitAdded() {
-      console.log("Init added, ", this.mediaSource.readyState);
         if (this.mediaSource.readyState === 'open' && this.sourceBuffer) {
             this.sourceBuffer.removeEventListener('updateend', this.onInitAddedBound);
             this.sourceBuffer.addEventListener('updateend', this.onBufferUpdateEndBound);
             this.sourceBuffer.addEventListener('updatestart', this.onBufferUpdateStartBound);
+            let off = this.sourceBuffer.timestampOffset - this.currentVo['timestampOffset'];
             try {
+                this.sourceBuffer.timestampOffset = off;
+            } catch (e) {
+                this._resetMediasource();
+            }
+            //this.sourceBuffer.timestampOffset = this.sourceBuffer.timestampOffset - currentVo['timestampOffset'];
+            try {
+                if (VERBOSE) {
+                    console.log("Added segment: ", this.currentVideoId, "Total duration:", this.totalDuration);
+                }
                 this.sourceBuffer.appendBuffer(this.segResp);
             } catch (e) {
+                if (VERBOSE) {
+                    console.log(e);
+                }
                 this._resetMediasource();
             }
         }
@@ -292,20 +317,20 @@ class VjMediaSource {
 
     //crash
 
+    _canUpdate() {
+        return this.mediaSource.readyState === 'open';
+    }
+
     _removeSourceBuffer() {
         if (this.sourceBuffer) {
             this.sourceBuffer.removeEventListener('updateend', this.onBufferUpdateEndBound);
             this.sourceBuffer.removeEventListener('updatestart', this.onBufferUpdateStartBound);
             try {
                 this.sourceBuffer.remove(0, this.mediaSource.duration);
-                mediaSource.removeSourceBuffer(this.sourceBuffer);
-                if (VERBOSE) {
-                    console.warn('Removed buffer source');
-                }
+                this.mediaSource.removeSourceBuffer(this.sourceBuffer);
+                console.warn('Removed buffer source');
             } catch (e) {
-                if (VERBOSE) {
-                    console.log(e);
-                }
+                console.log(e);
             }
         }
     }
@@ -317,18 +342,18 @@ class VjMediaSource {
         if (VERBOSE) {
             console.log(this.mediaSource.readyState !== 'open' || this.mediaSource.updating)
         }
-        if (this.mediaSource.readyState !== 'open' || this.mediaSource.updating) {
-            return;
-        }
         if (VERBOSE) {
             console.warn('Reset buffer source');
         }
-        _removeSourceBuffer();
+        this._removeSourceBuffer();
+        this.mediaSource.removeEventListener('error', this.onSourceErrorBound);
+        this.mediaSource.removeEventListener('sourceopen', this.onSourceOpenBound);
+        this.mediaSource = null;
         this.sourceBuffer = null;
-        this.mediaSource.duration = 0;
+        this.requestingNewVo = false;
         this.enterFrameCounter = 0;
-        videoElement.currentTime = 0;
-        this.segDuration = this.playOffset = 0;
+        this.videoElement.currentTime = 0;
+        this.totalDuration = this.segDuration = this.playOffset = 0;
     }
 
 }

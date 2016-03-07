@@ -26,6 +26,14 @@ const shaderLib = {
             uniforms: uniforms
         }
     },
+    chromaSimple() {
+        var shader = SHADERS["chromaSimple"];
+        var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+        return {
+            shader: shader,
+            uniforms: uniforms
+        }
+    },
     raymarch() {
         var shader = SHADERS["raymarch"];
         var uniforms = THREE.UniformsUtils.clone(shader.uniforms);

@@ -8,15 +8,19 @@
 
             #pragma glslify: ease = require(glsl-easings/sine-out)
 
+            float chromaVal(vec3 color, vec3 keyColor, float tolerance, float slope) {
+                 float d = abs(length(abs(keyColor - color)));
+                 float edge0 = tolerance * (1.0 - slope);
+                 float alpha = smoothstep(edge0, tolerance, d);
+                 return 1. - alpha;
+            }
+
             void main() {
-                vec4 texOne = texture2D(tDiffuse, vUv);
-                vec4 texTwo = texture2D(tTwo, vUv);
+                vec4 texel1 = texture2D(tDiffuse, vUv);
+                vec4 texel2 = texture2D(tTwo, vUv);
 
-                vec3 textTwoCol = texTwo.rgb;
+                float cVal = chromaVal(texel1.rgb, vec3(0.0), uMixRatio, uThreshold);
+                vec4 col = mix(texel1, texel2, cVal);
 
-                float r = uMixRatio * (1.0 + uThreshold * 2.0) - uThreshold;
-                float mixf = clamp((texOne.r - r) * (1.0 / uThreshold), 0.0, 1.0);
-                vec4 col = mix(texOne, vec4(textTwoCol, 1.0), mixf);
-                col *= 0.01 + 2.5 * pow(vUv.x * vUv.y * (1.0 - vUv.x) * (1.0 - vUv.y), 0.3);
                 gl_FragColor = col;
             }
