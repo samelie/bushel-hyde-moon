@@ -15,6 +15,7 @@ const SEARCH = "https://www.googleapis.com/youtube/v3/search";
 const VIDEO = "https://www.googleapis.com/youtube/v3/videos";
 const PLAYLISTS = "https://www.googleapis.com/youtube/v3/playlists";
 const PLAYLIST_ITEMS = "https://www.googleapis.com/youtube/v3/playlistItems";
+const COMMENT_THREADS = "https://www.googleapis.com/youtube/v3/commentThreads";
 
 let _sidxQueue = new BlueBirdQueue({
 	concurrency: 1 // optional, how many items to process at a time
@@ -107,6 +108,16 @@ const YT = {
 			});
 		},
 
+		videoComments(options){
+			let params = QS.stringify(_.assign({}, {
+				part: 'snippet',
+			}, DEFAULTS, _getAuth(), options));
+
+			return fetch(`${COMMENT_THREADS}?${params}`).then(response => {
+				return response.json();
+			});
+		},
+
 		serverRelated(id) {
 			let p = new Q((resolve, reject) => {
 				$.get(process.env.SERVER_BASE + 'youtube/video/related', {
@@ -139,6 +150,7 @@ const YT = {
 			});
 			return _addNextSidx(p);
 		},
+
 
 		getYoutubeAudioTracks: getYoutubeAudioTracks
 

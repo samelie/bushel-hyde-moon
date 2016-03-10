@@ -20,15 +20,15 @@ class AudioYoutubeSono {
     //   console.log(b)
     // });
     //console.log(this.sound);
-   // this.analyser = this.sound.effect.analyser(NUM_SAMPLES);
+    this.analyser = this.sound.effect.analyser(NUM_SAMPLES);
     //Analyzer
     //this.sound.play();
     //  this.sound.playbackRate = 0.5;
     //	console.log(this.sound)
   }
 
-  getAmplitude(){
-    return this.sound.getAmplitude();
+  getAmplitude(callback){
+   return this.analyser.getAmplitude(callback);
   }
 }
 

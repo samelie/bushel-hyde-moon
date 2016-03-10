@@ -64,5 +64,10 @@ Utils.getYoutubeAccessToken = function(){
   return Cookies.get('rad-youtubeAccess');
 };
 
+Utils.extractVideoIdFromUpload = function(string){
+		let s = string.split('vi/')[1];
+		return s.split('/')[0];
+};
+
 // Export
 export default Utils;

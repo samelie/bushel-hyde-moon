@@ -81,9 +81,9 @@ class AudioView extends Marionette.LayoutView {
 
   }
 
-  getAmplitude() {
+  getAmplitude(callback) {
     if (this.audioSono) {
-      return this.audioSono.getAmplitude();
+      return this.audioSono.getAmplitude(callback);
     }
   }
 

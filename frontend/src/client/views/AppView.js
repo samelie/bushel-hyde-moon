@@ -4,6 +4,7 @@
 import Backbone from 'backbone';
 import Marionette from 'backbone.marionette';
 import $ from 'jquery';
+import Q from 'bluebird';
 
 import template from './app.ejs';
 
@@ -45,6 +46,9 @@ class AppView extends Marionette.LayoutView {
   }
 
   initialize() {
+    Q.config({
+      cancellation: true
+    });
     // auto render
     // Channel.on(Channel.VJ_START, this.onVjStart, this);
 
@@ -91,7 +95,7 @@ class AppView extends Marionette.LayoutView {
 
   update() {
     if (this.audioView) {
-      //let amp = this.audioView.getAmplitude();
+      let amp = this.audioView.getAmplitude(this._onAmplitude);
       //console.log(amp);
     }
 
@@ -99,6 +103,10 @@ class AppView extends Marionette.LayoutView {
       this.vjView.update();
     }
     window.requestAnimationFrame(this.boundUpdate);
+  }
+
+  _onAmplitude(amp) {
+
   }
 
   showUserPlaylists(playlists) {

@@ -70,6 +70,7 @@ class VjView extends Marionette.ItemView {
     this.vj = new VJManager(this.el, {
       count: 1,
       playlists: [PLAY_VJ],
+      maxVideoTime: 60,
       quality: {
         chooseBest: true,
         resolution: '360p'
@@ -110,15 +111,19 @@ class VjView extends Marionette.ItemView {
   }
 
   onMouseMove(e) {
-    if(this.gettingRelated){
+    if (this.gettingRelated) {
       return;
     }
     let y = e.pageY / this.windowHeight;
     let x = e.pageX / this.windowWidth;
-    if(y > .8 && x < 0.2){
+    if (y > .8 && x < 0.2) {
       this.gettingRelated = true;
-      console.log("Here");
-       Channel.trigger('addrelatedtocurrent');
+      Channel.trigger('addrelatedtocurrent');
+    } else {
+      if (y > .8 && x > 0.8) {
+        this.gettingRelated = true;
+        Channel.trigger('adddeeper');
+      }
     }
   }
 

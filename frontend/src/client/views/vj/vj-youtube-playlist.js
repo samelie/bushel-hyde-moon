@@ -46,6 +46,7 @@ class MediaPlaylist {
     });
 
     Channel.on('addrelatedtocurrent', this._getRelatedTo, this);
+    Channel.on('adddeeper', this._getDeeper, this);
   }
 
   _init() {
@@ -78,6 +79,38 @@ class MediaPlaylist {
     this._getNext();
   }
 
+  _getDeeper() {
+    return YoutubeService.videoComments({
+      videoId: this.currentVo.videoId
+    }).then((results) => {
+      console.log(results);
+      if (results.items.length) {
+        let userProfile = {
+          uploads: [],
+          likes: []
+        };
+        return ServerService.channelUploadsFromComments(results, userProfile)
+          .finally(() => {
+            let _ups = userProfile.uploads;
+            let _likes = userProfile.likes;
+            let indexOf = _ups.indexOf(this.currentVo.videoId);
+            if (indexOf > -1) {
+              _ups.splice(indexOf, 1);
+            }
+            console.log(_ups);
+            let _chosen = _ups.length ? _ups : _likes;
+            console.log(_chosen);
+            let newVideoId = Utils.getRandom(_chosen);
+            console.log(_chosen);
+            console.log(newVideoId);
+            return _getSidxAndAdd(newVideoId);
+          });
+      } else {
+        return this._getRelatedTo();
+      }
+    });
+  }
+
   _getRelatedTo() {
     YoutubeService.relatedToVideo({
         part: 'snippet',
@@ -88,11 +121,15 @@ class MediaPlaylist {
         this.youtubeItems = [...this.youtubeItems, ...data.items]
         var item = Utils.getRandom(data.items);
         var vId = Utils.getIdFromItem(item);
-        return this._getSidx(vId).then((sidx)=>{
-          this.sidxResults = [...this.sidxResults, sidx];
-          return this._createReferenceIndexFromResults([sidx]);
-        });
+        return _getSidxAndAdd(vId);
       });
+  }
+
+  _getSidxAndAdd(vId) {
+    return this._getSidx(vId).then((sidx) => {
+      this.sidxResults = [...this.sidxResults, sidx];
+      return this._createReferenceIndexFromResults([sidx]);
+    });
   }
 
   _getNext() {
@@ -127,7 +164,7 @@ class MediaPlaylist {
 
   _createReferenceIndexFromResults(results) {
     _.each(results, (item) => {
-      this.playlistUtils.mix(item.sidx.references);
+      this.playlistUtils.mix(item.sidx, this.options);
     });
     return this.sidxIndexReferences;
   }
