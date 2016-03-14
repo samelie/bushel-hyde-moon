@@ -12,23 +12,27 @@ function PlaylistUtils() {
 
   var SPREAD = 0.5;
 
-  function _spread(references, options) {
+  function _spread(references, injectIndex, options) {
     if (!references) {
       return _referenceIndexs;
     }
-    var l = references.length;
+    var l = options.endIndex - options.startIndex;
     var totalIndex = _referenceIndexs.length;
+    let _c = injectIndex;
     for (var i = options.startIndex; i < options.endIndex; i++) {
-      var n = _sineOut(i / l);
-      var targetIndex = Math.min(i + Math.floor(totalIndex * (n * SPREAD / 2)), _referenceIndexs.length);
+      var n = _sineOut(_c / l);
+      var targetIndex = Math.min(_c + Math.floor(totalIndex * (n * SPREAD / 2)), _referenceIndexs.length);
       _referenceIndexs.splice(targetIndex, 0, `${_videoIndex}_${i}`);
+      _c++;
     }
     _videoIndex++;
-    console.log(_referenceIndexs);
     return _referenceIndexs;
   }
 
-  function mix(sidx, options = {}) {
+  function mix(sidx, injectIndex, options = {}) {
+    if (!sidx) {
+      return _referenceIndexs;
+    }
     let refs = sidx.references;
     let refDur = refs[0].durationSec;
     let totalTime = refDur * refs.length;
@@ -40,7 +44,7 @@ function PlaylistUtils() {
     let startIndex = Math.max(Math.floor(startTime / refDur), 0);
     let endIndex = Math.min(Math.floor(options.maxVideoTime / refDur) + startIndex, refs.length - 1);
 
-    return _spread(sidx.references, { startIndex, endIndex });
+    return _spread(sidx.references, injectIndex, { startIndex, endIndex });
   }
 
   function clear() {

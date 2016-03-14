@@ -22,10 +22,14 @@ class MediaPlaylist {
 
     this.playlistUtils = new PlaylistUtils();
 
+    //waiting on more data
+    this._waiting = false;
+
     this.playlistReferenceIndex = 0;
     this.sidxIndexReferences = this.playlistUtils.referenceIndexs;
 
     this.youtubeItems = [];
+    this.youtubeItemsIds = [];
     this.sidxResults = [];
 
     this.mediaSource.endingSignal.add(() => {
@@ -44,26 +48,31 @@ class MediaPlaylist {
       this.currentVo = currentVo;
       Channel.trigger('videostarted', this._getTitleFromId(currentVo.videoId));
     });
-
-    Channel.on('addrelatedtocurrent', this._getRelatedTo, this);
-    Channel.on('adddeeper', this._getDeeper, this);
   }
 
   _init() {
+    console.log(this.options.playlists);
     if (this.options.playlists) {
-      Q.map(this.options.playlists, (id) => {
+      return Q.map(this.options.playlists, (id) => {
         return YoutubeService.playlistItems({
             playlistId: id
           })
           .then(results => {
-            this.youtubeItems = [...this.youtubeItems, ...results.items]
+            this._updateYoutubeResults(results);
             return Q.map(this.youtubeItems, (item) => {
               let vId = Utils.getIdFromItem(item);
-              return this._getSidx(vId);
+              return this._getSidx(vId).catch(err => {
+                return undefined;
+              });
             }, {
               concurrency: 1
             }).then(results => {
-              this.sidxResults = [...this.sidxResults, ...results];
+              //clean
+              results = _.compact(results);
+
+              if (results.length) {
+                this.sidxResults = [...this.sidxResults, ...results];
+              }
               return this._createReferenceIndexFromResults(results);
             });
           });
@@ -76,6 +85,8 @@ class MediaPlaylist {
   }
 
   _start() {
+    Channel.on('addrelatedtocurrent', this._getRelatedTo, this);
+    Channel.on('adddeeper', this._getDeeper, this);
     this._getNext();
   }
 
@@ -83,13 +94,12 @@ class MediaPlaylist {
     return YoutubeService.videoComments({
       videoId: this.currentVo.videoId
     }).then((results) => {
-      console.log(results);
       if (results.items.length) {
         let userProfile = {
           uploads: [],
           likes: []
         };
-        return ServerService.channelUploadsFromComments(results, userProfile)
+        return ServerService.channelUploadsFromComments(results, userProfile, this.youtubeItemsIds)
           .finally(() => {
             let _ups = userProfile.uploads;
             let _likes = userProfile.likes;
@@ -97,31 +107,46 @@ class MediaPlaylist {
             if (indexOf > -1) {
               _ups.splice(indexOf, 1);
             }
-            console.log(_ups);
             let _chosen = _ups.length ? _ups : _likes;
-            console.log(_chosen);
             let newVideoId = Utils.getRandom(_chosen);
-            console.log(_chosen);
-            console.log(newVideoId);
-            return _getSidxAndAdd(newVideoId);
+            if (!newVideoId) {
+              return this._getRelatedToAndCheck();
+            } else {
+              return YoutubeService.video({ id: newVideoId, part: 'snippet' })
+                .then(data => {
+                  Utils.standardizeYoutubeVideoInfoFormat(data.items[0]);
+                  this._updateYoutubeResults(data);
+                  return this._getSidxAndAdd(newVideoId)
+                    .then(() => {
+                      this._checkAfterNewVideoFound();
+                    });
+                });
+            }
           });
       } else {
-        return this._getRelatedTo();
+        console.log("No comments for ", this.currentVo.videoId);
+        return this._getRelatedToAndCheck();
       }
     });
   }
 
+  _getRelatedToAndCheck() {
+    return this._getRelatedTo().then(() => {
+      return this._checkAfterNewVideoFound();
+    });
+  }
+
   _getRelatedTo() {
-    YoutubeService.relatedToVideo({
+    return YoutubeService.relatedToVideo({
         part: 'snippet',
         id: this.currentVo.videoId,
         order: 'relevance',
       })
       .then(data => {
-        this.youtubeItems = [...this.youtubeItems, ...data.items]
+        this._updateYoutubeResults(data);
         var item = Utils.getRandom(data.items);
         var vId = Utils.getIdFromItem(item);
-        return _getSidxAndAdd(vId);
+        return this._getSidxAndAdd(vId);
       });
   }
 
@@ -132,12 +157,26 @@ class MediaPlaylist {
     });
   }
 
+  _checkAfterNewVideoFound() {
+    if (this._waiting) {
+      console.log("NEX");
+      this._waiting = false;
+      this._getNext();
+    }
+  }
+
   _getNext() {
+    console.log(this.sidxIndexReferences);
     let referenceIndex = this.sidxIndexReferences[this.playlistReferenceIndex];
+    if (!referenceIndex) {
+      this._waiting = true;
+      this._getDeeper();
+      return;
+    }
+    console.log(this.playlistReferenceIndex, referenceIndex);
     let split = referenceIndex.split('_');
     let playlistItemIndex = split[0];
     let playlistItemReferenceIndex = split[1];
-
     let sidxPlaylistItem = this.sidxResults[playlistItemIndex];
     let vo = VjUtils.getReferenceVo(sidxPlaylistItem, playlistItemReferenceIndex);
     this.mediaSource.addVo(vo);
@@ -152,11 +191,20 @@ class MediaPlaylist {
   //     PlaylistUtils.mixSidxReferences(this.sidxIndexReferences, this.playlistItemIndex, references);
   // }
 
+  _updateYoutubeResults(data) {
+    let _ids = [];
+    _.each(data.items, (item) => {
+      _ids.push(Utils.getIdFromItem(item));
+    });
+    this.youtubeItems = [...this.youtubeItems, ...data.items];
+    this.youtubeItemsIds = [...this.youtubeItemsIds, ..._ids];
+  }
+
   _getTitleFromId(vId) {
     var ytItem;
-    _.each(this.youtubeItems, (item) => {
-      if (Utils.getIdFromItem(item) === vId) {
-        ytItem = item;
+    _.each(this.youtubeItemsIds, (id, i) => {
+      if (id === vId) {
+        ytItem = this.youtubeItems[i];
       }
     });
     return ytItem;
@@ -164,16 +212,13 @@ class MediaPlaylist {
 
   _createReferenceIndexFromResults(results) {
     _.each(results, (item) => {
-      this.playlistUtils.mix(item.sidx, this.options);
+      this.playlistUtils.mix(item.sidx, this.playlistReferenceIndex, this.options);
     });
     return this.sidxIndexReferences;
   }
 
   _getSidx(vId) {
-    return ServerService.getSidx(vId, this.options.quality)
-      .then((results) => {
-        return results;
-      });
+    return ServerService.getSidx(vId, this.options.quality);
   }
 }
 

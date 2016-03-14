@@ -8,7 +8,7 @@ const Utils = {
 
 };
 
-Utils.parseQueryString = function (string){
+Utils.parseQueryString = function(string) {
   return QS.parse(string);
 }
 
@@ -37,8 +37,19 @@ Utils.urlParams = function() {
   return result;
 };
 
+Utils.standardizeYoutubeVideoInfoFormat = (item) => {
+	item.snippet.resourceId = {};
+	item.snippet.resourceId.videoId = item.id;
+};
+
 Utils.getRandom = (list) => {
   let v = undefined;
+  if (!list.length) {
+    return;
+  }
+  if (list.length < 2) {
+    return list[0];
+  }
   while (!v) {
     let r = Math.floor(Math.random() * list.length - 1);
     v = list[r];
@@ -46,27 +57,27 @@ Utils.getRandom = (list) => {
   return v;
 };
 
-Utils.getIdFromItem = (item)=>{
-  if(_.isObject(item.id)){
+Utils.getIdFromItem = (item) => {
+  if (_.isObject(item.id)) {
     return item.id.videoId;
-  }else if(_.isObject(item.snippet.resourceId)){
+  } else if (_.isObject(item.snippet.resourceId)) {
     return item.snippet.resourceId.videoId;
-  }else{
+  } else {
     return;
   }
 };
 
-Utils.getSpotifyAccessToken = function(){
+Utils.getSpotifyAccessToken = function() {
   return Cookies.get('rad-spotifyAccess');
 };
 
-Utils.getYoutubeAccessToken = function(){
+Utils.getYoutubeAccessToken = function() {
   return Cookies.get('rad-youtubeAccess');
 };
 
-Utils.extractVideoIdFromUpload = function(string){
-		let s = string.split('vi/')[1];
-		return s.split('/')[0];
+Utils.extractVideoIdFromUpload = function(string) {
+  let s = string.split('vi/')[1];
+  return s.split('/')[0];
 };
 
 // Export

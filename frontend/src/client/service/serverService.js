@@ -60,45 +60,54 @@ const ServerService = {
         ...options
       }).then((data) => {
         if (data.status === 500) {
-          reject();
+          reject({ message: `Failed on ${id}`, id: id });
         } else {
-          data[0].videoId = id;
-          resolve(data[0]);
+          let _d = data[0];
+          if (!_d) {
+            reject({ message: `Failed on ${id}`, id: id });
+          } else {
+            _d.videoId = id;
+            resolve(_d);
+          }
         }
       });
     });
     return _addRequest(p);
   },
 
-  channelUploadsFromComments(results, userProfile) {
+  channelUploadsFromComments(results, userProfile, existingIds) {
     let channelIds = [];
     _.each(results.items, (item) => {
       let channelId = item.snippet.topLevelComment.snippet.authorChannelId.value;
       channelIds.push(channelId);
     });
-    console.log(channelIds);
     let mapped = Q.map(channelIds, (chId) => {
-      console.log(chId);
       let chUpload = this.channelUploads(chId)
         .then(data => {
           if (data.length) {
             _.each(data, (item) => {
               //is not a likes video
               let vId = Utils.extractVideoIdFromUpload(item.img);
-              if (item.content.indexOf('by ') === -1) {
-                userProfile.uploads.push(vId);
+              if (existingIds.indexOf(vId) < 0) {
+                if (item.content.indexOf('by ') === -1) {
+                  userProfile.uploads.push(vId);
+                } else {
+                  userProfile.likes.push(vId);
+                }
               } else {
-                userProfile.likes.push(vId);
+                console.log(`Skip, has ${vId}`);
               }
             });
             if (channelIds.indexOf(chId) > 5 && !userProfile.uploads.length) {
+              console.log("Couldn't find any uploads, using likes");
               return chUpload.cancel();
             } else if (userProfile.uploads.length) {
+              console.log(`Found uploads of ${chId}`);
               return chUpload.cancel();
             }
             return data;
           }
-          console.log("No uploads ");
+          console.log(`No uploads on ${chId}`);
           return data;
         });
       return chUpload;
@@ -112,12 +121,6 @@ const ServerService = {
         channelId: channelId
       }).then((data) => {
         resolve(data);
-        // if (data.status === 500) {
-        //   reject();
-        // } else {
-        //   data[0].videoId = id;
-        //   resolve(data[0]);
-        // }
       });
     });
     return _addRequest(p);

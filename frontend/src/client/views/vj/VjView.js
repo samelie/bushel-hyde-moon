@@ -70,7 +70,7 @@ class VjView extends Marionette.ItemView {
     this.vj = new VJManager(this.el, {
       count: 1,
       playlists: [PLAY_VJ],
-      maxVideoTime: 60,
+      maxVideoTime: 30,
       quality: {
         chooseBest: true,
         resolution: '360p'
