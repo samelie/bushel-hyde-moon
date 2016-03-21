@@ -3,6 +3,8 @@ import THREE from 'three';
 import FxComposer from './vj-fx-composer';
 import Shaders from './shaders/shaders';
 
+import ControlPerameters from './vj-control-perameters';
+
 const FPS = 30;
 
 class FxLayer {
@@ -41,8 +43,14 @@ class FxLayer {
 
     var renderPass = new THREE.RenderPass(this.scene, camera);
     var effectCopy = new THREE.ShaderPass(Shaders.copy, camera);
+
+    this.color = new THREE.ShaderPass(Shaders.color);
+    this.color.uniforms['tDiffuse'].value = this.fbo;
+    this.color.uniforms['uSaturation'].value = 0.4;
+
     this.composer = new THREE.EffectComposer(renderer, this.fbo);
     this.composer.addPass(renderPass);
+    this.composer.addPass(this.color);
     this.composer.addPass(effectCopy);
     //this.fx = new FxComposer(this.scene, camera, renderer, this._mesh, this.fbo);
   }

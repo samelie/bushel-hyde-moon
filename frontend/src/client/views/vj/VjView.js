@@ -21,6 +21,7 @@ import ServerService from 'serverService';
 //import VJ from './vj';
 import VJManager from './vj-mediasource-manager';
 import VjRenderer from './vj-fx-renderer';
+import ControlPerameters from './vj-control-perameters';
 
 const PLAY_VJ = "PLOnhHR5nulMPisi4X15rmPpEVp2Q-MIY0";
 const TRENDING_TODAY = "PLbpi6ZahtOH7h9OULR1AVb4i8zo0ctwEr";
@@ -62,6 +63,12 @@ class VjView extends Marionette.ItemView {
 			this.gettingRelated = false;
 			this.ui.videoInfo[0].innerHTML = ytItem.snippet.title;
 		}, this);
+
+
+		Channel.on('audio:newtrack', (data)=>{
+			let _energy = data.echo.audio_summary.energy;
+			ControlPerameters.playlistUtils.spread = _energy;
+		});
 
 		this.boundUpdate = this._update.bind(this);
 	}

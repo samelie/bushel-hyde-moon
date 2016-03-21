@@ -4,17 +4,22 @@ import Q from 'bluebird';
 import Session from 'session';
 'use strict';
 
+const API = "ZBQTSD4KGRLBYNP5Y";
+const BASE = 'http://developer.echonest.com/api/v4/track/profile';
+
 const ECHO = {
 
-  search(id) {
-      return Q.resolve($.post(process.env.SERVER_BASE + 'echonest/search', {
-        id: id
-      })).then((data) => {
-        return JSON.parse(data.body);
-      }).catch((e) => {
-        console.log(e);
-      });
-    }
+	search: (id) => {
+		return Q.resolve($.get(`${BASE}`, {
+			api_key: API,
+			format: 'json',
+			id: id,
+			bucket: 'audio_summary'
+		})).then((data) => {
+			return data.response.track;
+		});
+	}
+
 };
 
 export default ECHO;

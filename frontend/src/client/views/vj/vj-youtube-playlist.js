@@ -12,6 +12,7 @@ import Channel from 'channel';
 import YoutubeService from 'youtubeService';
 import ServerService from 'serverService';
 import PlaylistUtils from './vj-youtube-playlist-utils';
+import ControlPerameters from './vj-control-perameters';
 import VjUtils from './vj-utils';
 
 class MediaPlaylist {
@@ -110,6 +111,9 @@ class MediaPlaylist {
 						let _chosen = _ups.length ? _ups : _likes;
 						//sort by lowest viewcount
 						let _sorted = _chosen.sort(Utils.sortByView)[0];
+						if(!_sorted){
+							return this._getRelatedToAndCheck();
+						}
 						let newVideoId = _sorted.videoId;
 						if (!newVideoId) {
 							return this._getRelatedToAndCheck();
@@ -152,6 +156,7 @@ class MediaPlaylist {
 	}
 
 	_onRelatedVideos(data) {
+		console.log(data);
 		var item = Utils.getRandom(data.items);
 		var vId = Utils.getIdFromItem(item);
 		return this._getSidxAndAdd(vId)

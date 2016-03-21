@@ -92,9 +92,9 @@ const ServerService = {
 							let _views = Utils.extractViewsFromScrape(item.content);
 							if (existingIds.indexOf(vId) < 0) {
 								if (item.content.indexOf('by ') === -1) {
-									userProfile.uploads.push({videoId:vId, views:_views});
+									userProfile.uploads.push({ videoId: vId, views: _views });
 								} else {
-									userProfile.likes.push({videoId:vId, views:_views});
+									userProfile.likes.push({ videoId: vId, views: _views });
 								}
 							} else {
 								console.log(`Skip, has ${vId}`);

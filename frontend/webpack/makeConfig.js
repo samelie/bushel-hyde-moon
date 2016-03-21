@@ -153,6 +153,7 @@ export default function makeConfig(isDevelopment) {
         'serverService': require.resolve(path.join(constants.SRC_DIR, 'client/service/serverService.js')),
         'knowledgeService': require.resolve(path.join(constants.SRC_DIR, 'client/service/knowledgeService.js')),
         'shim': require.resolve(path.join(constants.SRC_DIR, 'client/common/shim.js')),
+        'ease-number': require.resolve(path.join(constants.SRC_DIR, 'client/common/ease-numbers.js')),
         'utils': require.resolve(path.join(constants.SRC_DIR, 'client/common/utils.js')),
         'channel': require.resolve(path.join(constants.SRC_DIR, 'client/common/channel.js')),
         'playlist': require.resolve(path.join(constants.SRC_DIR, 'client/common/playlist.js')),
