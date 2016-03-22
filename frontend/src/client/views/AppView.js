@@ -5,6 +5,7 @@ import Backbone from 'backbone';
 import Marionette from 'backbone.marionette';
 import $ from 'jquery';
 import Q from 'bluebird';
+import EaseNumbers from 'ease-number';
 
 import template from './app.ejs';
 
@@ -82,11 +83,17 @@ class AppView extends Marionette.LayoutView {
 
 		Channel.on('youtube:login:success', (auth) => {
 			this.vjView = new VjView();
+			this.vjView.setAudioAnalyzeVo(this._audioAnalyzeVo);
 			this.youtubeRegion.show(this.vjView);
 		});
 
 		this.boundUpdate = this.update.bind(this);
 		this.boundOnAmplitude = this._onAmplitude.bind(this);
+
+		this._audioAnalyzeVo = {
+			beat:0,
+			amplitude:0
+		};
 		this.boundUpdate();
 	}
 
@@ -99,6 +106,7 @@ class AppView extends Marionette.LayoutView {
 	}
 
 	update() {
+		EaseNumbers.update();
 		if (this.audioView) {
 			this.audioView.update();
 			this.audioView.getAmplitude(this.boundOnAmplitude);
@@ -112,13 +120,11 @@ class AppView extends Marionette.LayoutView {
 
 	_onAmplitude(amp) {
 		let _b = this.audioView.isBeat();
-		if(_b){
-			console.log("BEAT!!");
-		}
+		this._audioAnalyzeVo.beat = _b;
+		this._audioAnalyzeVo.amplitude = amp;
 	}
 
 	showUserPlaylists(playlists) {
-
 		//this.youtubeRegion.show(new YoutubeView(playlists.items));
 	}
 

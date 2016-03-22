@@ -59,7 +59,8 @@ class MoonLayer {
     this.texture2.minFilter = THREE.LinearFilter;
     this.texture2.magFilter = THREE.LinearFilter;
 
-    this.mixPass = new THREE.ShaderPass(Shaders.blend, this.camera);
+    this.mixPass = new THREE.ShaderPass(Shaders.mix, this.camera);
+    this.mixPass.uniforms["blendOpacity"].value = 0;
     this.mixPass.uniforms['background'].value = this.texture1;
     this.mixPass.uniforms['foreground'].value = this.texture2;
 

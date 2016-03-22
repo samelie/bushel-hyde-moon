@@ -13,8 +13,6 @@ import VjVideoCanvas from './vj-video-canvas';
 import VjRenderer from './vj-fx-renderer';
 import VjUtils from './vj-utils';
 
-const TERMS = ['kinks live', 'downhill biking', 'cats'];
-
 const TRANSITION_DUR = 1000;
 const TRANSITION_DELAY = 300;
 

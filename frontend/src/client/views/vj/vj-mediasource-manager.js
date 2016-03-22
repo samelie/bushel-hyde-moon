@@ -8,6 +8,7 @@ import Emitter from 'emitter';
 import Channel from 'channel';
 import Signals from 'signals';
 
+import ControlPerameters from './vj-control-perameters';
 import VjMediaSource from './vj-mediasource';
 import VjVideoCanvas from './vj-video-canvas';
 import VjPlaylist from './vj-youtube-playlist';

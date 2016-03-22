@@ -27,9 +27,6 @@ void main() {
   vec4 bgColor = texture2D(background, vUv);
   vec4 fgColor = texture2D(foreground, vUv);
   vec3 mixxed = mix(fgColor.rgb, bgColor.rgb, rockOpacity);
-  //float mappedOpacity = map(ba, 0.0, 1.0, 0.0, PI*2.0);
-  //vec3 color = blend(blendMode, oo.rgb, outputColor.rgb, sin(mappedOpacity));
-  //vec3 color = blend(blendMode, oo.rgb, outputColor.rgb, sin(mappedOpacity));
-  vec3 color = blend(blendMode, bgColor.rgb, mixxed, 1.0);
+  vec3 color = blend(blendMode, bgColor.rgb, mixxed, blendOpacity);
   gl_FragColor = vec4(color,1.0);
 }

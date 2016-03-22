@@ -25,23 +25,25 @@ function ImageCanvas(options = {}) {
   var _imageSources;
   var _loading = [];
   var _transitioning = false;
+  var _transitionDelay = 100;
   var _transitionTotal;
 
   var canvas = [_createCanvas('canvas1'), _createCanvas('canvas2')];
-
   var ctx1 = canvas[0].getContext("2d");
   var ctx2 = canvas[1].getContext("2d");
 
   var images = [_createImage(), _createImage()];
 
   images[0].onload = function() {
-    _loading[0] = false;
     _draw(images[0], ctx1);
+    _loading[0] = false;
+    _transitionDelay = 100;
   };
 
   images[1].onload = function() {
-    _loading[1] = false;
     _draw(images[1], ctx2);
+    _loading[1] = false;
+    _transitionDelay = 100;
   };
 
   function _draw(image, ctx) {
@@ -117,7 +119,7 @@ function ImageCanvas(options = {}) {
 
   function getActiveEl() {
     _activeEl++;
-    _loading[_activeEl % 2] = true; 
+    _loading[_activeEl % 2] = true;
     return images[_activeEl % 2];
   }
 
@@ -156,7 +158,7 @@ function ImageCanvas(options = {}) {
     for (i; i < l; i++) {
       if(_loading[i]){
         canUpdate = false;
-      } 
+      }
     }
     if (!canUpdate) {
       return;

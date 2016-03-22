@@ -29,166 +29,170 @@ const TRENDING_TODAY = "PLbpi6ZahtOH7h9OULR1AVb4i8zo0ctwEr";
 // Define
 class VjView extends Marionette.ItemView {
 
-	ui() {
-		return {
-			btn: '.btn-primary',
-			threeEl: '#three',
-			videoInfo: '.videoInfo'
-		}
-	}
+    ui() {
+        return {
+            btn: '.btn-primary',
+            threeEl: '#three',
+            videoInfo: '.videoInfo'
+        }
+    }
 
-	events() {
-		return {
-			'click @ui.btn': 'btnClick',
-			'mousemove': 'onMouseMove'
-		}
-	}
+    events() {
+        return {
+            'click @ui.btn': 'btnClick',
+            'mousemove': 'onMouseMove'
+        }
+    }
 
-	template() {
-		return template;
-	}
+    template() {
+        return template;
+    }
 
-	initialize() {
-		this.gettingRelated = false;
-		window.addEventListener('resize', () => {
-			this.windowWidth = window.innerWidth;
-			this.windowHeight = window.innerHeight;
-			if (this.vj) {
-				this.vj.onWindowResize(this.windowWidth, this.windowHeight);
-				this.renderer.onWindowResize(this.windowWidth, this.windowHeight);
-			}
-		});
+    initialize() {
+        this.gettingRelated = false;
+        window.addEventListener('resize', () => {
+            this.windowWidth = window.innerWidth;
+            this.windowHeight = window.innerHeight;
+            if (this.vj) {
+                this.vj.onWindowResize(this.windowWidth, this.windowHeight);
+                this.renderer.onWindowResize(this.windowWidth, this.windowHeight);
+            }
+        });
 
-		Channel.on('videostarted', (ytItem) => {
-			this.gettingRelated = false;
-			this.ui.videoInfo[0].innerHTML = ytItem.snippet.title;
-		}, this);
-
-
-		Channel.on('audio:newtrack', (data)=>{
-			if(data.echo){
-				let _energy = data.echo.audio_summary.energy;
-				ControlPerameters.playlistUtils.spread = _energy;
-			}
-		});
-
-		this.boundUpdate = this._update.bind(this);
-	}
-
-	onShow() {
-		this.vj = new VJManager(this.el, {
-			count: 1,
-			playlists: [PLAY_VJ],
-			maxVideoTime: 15,
-			quality: {
-				chooseBest: true,
-				resolution: '360p'
-			},
-			verbose: false
-		});
-
-		this.renderer = new VjRenderer(this.ui.threeEl[0]);
-
-		this.renderer.setTextures([
-			this.vj.getCanvasAt(0)
-		]);
-
-		this.windowWidth = window.innerWidth;
-		this.windowHeight = window.innerHeight;
-
-		//this.boundUpdate();
-		//this.vj = new VJ(this.el, this.ui.threeEl[0]);
-		// this.imagePlayer = new ImagePlayer({
-		//   el: this.el
-		// });
-
-		// ServerService.getManifest().then(data => {
-		//   let urls = Playlist.getUrlsByType(data, 'minerals');
-		//   this.imagePlayer.setImages(urls);
-		//   this.imagePlayer.init();
-		//   window.requestAnimationFrame(u);
-		// });
-
-		// YoutubeService.playlistItems({
-		//     playlistId: TRENDING_TODAY
-		//   })
-		//   .then(results => {
-		//     console.log(results);
-		//     this.defaultPlaylistItems = results;
-		//     this._getNext();
-		//   });
-	}
-
-	onMouseMove(e) {
-		if (this.gettingRelated) {
-			return;
-		}
-		let y = e.pageY / this.windowHeight;
-		let x = e.pageX / this.windowWidth;
-		if (y > .8 && x < 0.2) {
-			this.gettingRelated = true;
-			Channel.trigger('addrelatedtocurrent');
-		} else {
-			if (y > .8 && x > 0.8) {
-				this.gettingRelated = true;
-				Channel.trigger('adddeeper');
-			}
-		}
-	}
-
-	update() {
-		this.vj.update();
-		this.renderer.update();
-	}
-
-	_update() {
-		this.vj.update();
-		this.renderer.update();
-		this.requestId = window.requestAnimationFrame(this.boundUpdate);
-	}
+        Channel.on('videostarted', (ytItem) => {
+            this.gettingRelated = false;
+            this.ui.videoInfo[0].innerHTML = ytItem.snippet.title;
+        }, this);
 
 
-	// _getNext(id) {
-	//   let self = this;
-	//   let data;
+        Channel.on('audio:newtrack', (data) => {
+            if (data.echo) {
+                let _energy = data.echo.audio_summary.energy;
+                ControlPerameters.playlistUtils.spread = _energy;
+            }
+        });
 
-	//   console.log("Requesting next", id);
-	//   if (!id) {
-	//     data = this.defaultPlaylistItems;
-	//     var item = Utils.getRandom(data.items);
-	//     var vId = Utils.getIdFromItem(item);
-	//     return this._getSidxAndAdd(vId, this.vj.addVo);
-	//   } else {
-	//     return YoutubeService.relatedToVideo({
-	//         part: 'snippet',
-	//         id: id,
-	//         order: 'viewCount'
-	//       })
-	//       .then(data => {
-	//         var item = Utils.getRandom(data.items);
-	//         console.log(item);
-	//         var vId = Utils.getIdFromItem(item);
-	//         this._getTopicDetails(item.snippet.title, vId).then(value => {
-	//           console.log(value);
-	//         });
-	//         return this._getSidxAndAdd(vId);
-	//       });
-	//   }
-	// }
+        this.boundUpdate = this._update.bind(this);
+    }
 
-	// _getSidxAndAdd(vId) {
-	//   return ServerService.getSidx(vId).then((data) => {
-	//     let vo = VjUtils.createVo(data);
-	//     console.log("Adding ", vo.id);
-	//     this.vj.addVo(vo);
-	//   }).catch(err => {
-	//     console.log(err)
-	//     self._getNext(id);
-	//   });
-	// }
+    onShow() {
+        this.vj = new VJManager(this.el, {
+            count: 1,
+            playlists: [PLAY_VJ],
+            maxVideoTime: 15,
+            quality: {
+                chooseBest: true,
+                resolution: '360p'
+            },
+            verbose: false
+        });
+
+        this.renderer = new VjRenderer(this.ui.threeEl[0]);
+
+        this.renderer.setTextures([
+            this.vj.getCanvasAt(0)
+        ]);
+
+        this.windowWidth = window.innerWidth;
+        this.windowHeight = window.innerHeight;
+
+        //this.boundUpdate();
+        //this.vj = new VJ(this.el, this.ui.threeEl[0]);
+        // this.imagePlayer = new ImagePlayer({
+        //   el: this.el
+        // });
+
+        // ServerService.getManifest().then(data => {
+        //   let urls = Playlist.getUrlsByType(data, 'minerals');
+        //   this.imagePlayer.setImages(urls);
+        //   this.imagePlayer.init();
+        //   window.requestAnimationFrame(u);
+        // });
+
+        // YoutubeService.playlistItems({
+        //     playlistId: TRENDING_TODAY
+        //   })
+        //   .then(results => {
+        //     console.log(results);
+        //     this.defaultPlaylistItems = results;
+        //     this._getNext();
+        //   });
+    }
+
+    onMouseMove(e) {
+        if (this.gettingRelated) {
+            return;
+        }
+        let y = e.pageY / this.windowHeight;
+        let x = e.pageX / this.windowWidth;
+        if (y > .8 && x < 0.2) {
+            this.gettingRelated = true;
+            Channel.trigger('addrelatedtocurrent');
+        } else {
+            if (y > .8 && x > 0.8) {
+                this.gettingRelated = true;
+                Channel.trigger('adddeeper');
+            }
+        }
+    }
+
+    setAudioAnalyzeVo(vo) {
+        ControlPerameters.analyzeVo = vo;
+    }
+
+    update() {
+        this.vj.update();
+        this.renderer.update();
+    }
+
+    _update() {
+        this.vj.update();
+        this.renderer.update();
+        this.requestId = window.requestAnimationFrame(this.boundUpdate);
+    }
+
+
+    // _getNext(id) {
+    //   let self = this;
+    //   let data;
+
+    //   console.log("Requesting next", id);
+    //   if (!id) {
+    //     data = this.defaultPlaylistItems;
+    //     var item = Utils.getRandom(data.items);
+    //     var vId = Utils.getIdFromItem(item);
+    //     return this._getSidxAndAdd(vId, this.vj.addVo);
+    //   } else {
+    //     return YoutubeService.relatedToVideo({
+    //         part: 'snippet',
+    //         id: id,
+    //         order: 'viewCount'
+    //       })
+    //       .then(data => {
+    //         var item = Utils.getRandom(data.items);
+    //         console.log(item);
+    //         var vId = Utils.getIdFromItem(item);
+    //         this._getTopicDetails(item.snippet.title, vId).then(value => {
+    //           console.log(value);
+    //         });
+    //         return this._getSidxAndAdd(vId);
+    //       });
+    //   }
+    // }
+
+    // _getSidxAndAdd(vId) {
+    //   return ServerService.getSidx(vId).then((data) => {
+    //     let vo = VjUtils.createVo(data);
+    //     console.log("Adding ", vo.id);
+    //     this.vj.addVo(vo);
+    //   }).catch(err => {
+    //     console.log(err)
+    //     self._getNext(id);
+    //   });
+    // }
 
 
 };
 
 // Export
-export default VjView;
+export default VjView
