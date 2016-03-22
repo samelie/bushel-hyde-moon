@@ -3,7 +3,7 @@ import sono from '@stinkdigital/sono';
 const NUM_SAMPLES = 256;
 const NUM_SAMPLES_HALF = NUM_SAMPLES / 2;
 import Analyzer from './audioAnalysis';
-import BeatDetector from './BeatDetector';
+import BeatDetectorr from './BeatDetectorr';
 
 class AudioYoutubeSono {
   constructor(el) {
@@ -15,7 +15,9 @@ class AudioYoutubeSono {
     // source.connect(gainNode);
     // gainNode.connect(this.context.destination);
     //console.log(source)
+    this._beat = new BeatDetectorr();
     this.sound = sono.createSound(this.mediaEl);
+    console.log(this.sound);
     // this.beatDetector = new BeatDetector(this.sound, (b) => {
     //   console.log(b)
     // });
@@ -25,10 +27,26 @@ class AudioYoutubeSono {
     //this.sound.play();
     //  this.sound.playbackRate = 0.5;
     //	console.log(this.sound)
+    this.updateBound = this._onUpdate.bind(this);
+    this._ampCallback;
   }
 
   getAmplitude(callback){
-   return this.analyser.getAmplitude(callback);
+  	this._ampCallback = callback;
+   return this.analyser.getAmplitude(this.updateBound);
+  }
+
+  _onUpdate(amp){
+  	this._beat.setAmp(amp);
+  	this._ampCallback(amp);
+  }
+
+  isBeat(){
+  	return this._beat.isBeat;
+  }
+
+  getContext() {
+  	return this.sound.context;
   }
 }
 

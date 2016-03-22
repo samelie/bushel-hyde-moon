@@ -18,6 +18,14 @@ const shaderLib = {
             uniforms: uniforms
         }
     },
+     blendMoon() {
+        var shader = SHADERS["blendMoon"];
+        var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+        return {
+            shader: shader,
+            uniforms: uniforms
+        }
+    },
     chroma() {
         var shader = SHADERS["chroma"];
         var uniforms = THREE.UniformsUtils.clone(shader.uniforms);

@@ -125,6 +125,9 @@ class MediaPlaylist {
 									return this._getSidxAndAdd(newVideoId)
 										.then(() => {
 											this._checkAfterNewVideoFound();
+										})
+										.catch(err => {
+											console.log(err);
 										});
 								});
 						}

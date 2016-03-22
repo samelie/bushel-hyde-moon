@@ -97,13 +97,14 @@ class Renderer {
     // //this.composer.addPass(this.textPass);
     // this.composer.addPass(effectCopy);
 
-    let chroma = ShaderLib['chromaSimple']();
+    let chroma = ShaderLib['blendMoon']();
     let shader = chroma['shader'];
     this.uniforms = chroma['uniforms'];
-    this.uniforms['uMixRatio'].value = 0.8;
-    this.uniforms['uThreshold'].value = 0.15;
-    this.uniforms['tDiffuse'].value = this.moonLayer.fbo;
-    this.uniforms['tTwo'].value = this.layer1.fbo;
+    //this.uniforms['uMixRatio'].value = 0.8;
+    //this.uniforms['uThreshold'].value = 0.15;
+    this.uniforms['blendMode'].value = 16;
+    this.uniforms['background'].value = this.moonLayer.fbo;
+    this.uniforms['foreground'].value = this.layer1.fbo;
     //this.uniforms['tTwo'].value = this.shapeLayer.fbo;
     //this.uniforms['tMix'].value = this.shapeLayer.fbo;
 
@@ -113,11 +114,11 @@ class Renderer {
       uniforms: this.uniforms
     };
 
-    //let videoMaterial = new THREE.ShaderMaterial(parameters);
-    let videoMaterial = new THREE.MeshBasicMaterial({
-      map: this.layer1.fbo
-        //color:0xff0000
-    });
+    let videoMaterial = new THREE.ShaderMaterial(parameters);
+    // let videoMaterial = new THREE.MeshBasicMaterial({
+    //   map: this.layer1.fbo
+    //     //color:0xff0000
+    // });
 
     let quadgeometry = new THREE.PlaneBufferGeometry(VIDEO_WIDTH, VIDEO_HEIGHT, 2, 2);
     this.mesh = new THREE.Mesh(quadgeometry, videoMaterial);

@@ -69,7 +69,11 @@ class AppView extends Marionette.LayoutView {
 					this.audioView = new AudioView();
 					this.audioRegion.show(this.audioView);
 					Channel.trigger('audio:playlist:set', results);
-				}).done();
+				})
+				.catch(err=>{
+					console.log(err);
+				})
+				.done();
 				//SpotifyService.getUserPlaylists().then((r) => {console.log(r);})
 			});
 		});
@@ -82,8 +86,8 @@ class AppView extends Marionette.LayoutView {
 		});
 
 		this.boundUpdate = this.update.bind(this);
+		this.boundOnAmplitude = this._onAmplitude.bind(this);
 		this.boundUpdate();
-
 	}
 
 	onRender() {
@@ -97,8 +101,7 @@ class AppView extends Marionette.LayoutView {
 	update() {
 		if (this.audioView) {
 			this.audioView.update();
-			let amp = this.audioView.getAmplitude(this._onAmplitude);
-			//console.log(amp);
+			this.audioView.getAmplitude(this.boundOnAmplitude);
 		}
 
 		if (this.vjView) {
@@ -108,7 +111,10 @@ class AppView extends Marionette.LayoutView {
 	}
 
 	_onAmplitude(amp) {
-
+		let _b = this.audioView.isBeat();
+		if(_b){
+			console.log("BEAT!!");
+		}
 	}
 
 	showUserPlaylists(playlists) {

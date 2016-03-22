@@ -66,8 +66,10 @@ class VjView extends Marionette.ItemView {
 
 
 		Channel.on('audio:newtrack', (data)=>{
-			let _energy = data.echo.audio_summary.energy;
-			ControlPerameters.playlistUtils.spread = _energy;
+			if(data.echo){
+				let _energy = data.echo.audio_summary.energy;
+				ControlPerameters.playlistUtils.spread = _energy;
+			}
 		});
 
 		this.boundUpdate = this._update.bind(this);
