@@ -98,9 +98,10 @@ export default function makeConfig(isDevelopment) {
 				new webpack.DefinePlugin({
 					'process.env': {
 						NODE_ENV: JSON.stringify(isDevelopment ? 'development' : 'production'),
-						SERVER_BASE: JSON.stringify(`http://localhost:9999/`),
+						//SERVER_BASE: JSON.stringify(`http://localhost:9999/`),
 						//SERVER_BASE: JSON.stringify(`http://52.6.39.117/`), //good
 						//SERVER_BASE: JSON.stringify(`http://moon.mars.wtf/`),
+						SERVER_BASE: JSON.stringify(`https://moon-1261.appspot.com/`),
 						//SERVER_BASE: JSON.stringify(`http://${serverIp}:9999/`),
 						IS_BROWSER: true
 					}
