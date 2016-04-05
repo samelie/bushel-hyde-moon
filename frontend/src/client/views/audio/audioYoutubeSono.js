@@ -28,7 +28,9 @@ class AudioYoutubeSono {
     //  this.sound.playbackRate = 0.5;
     //	console.log(this.sound)
     this.updateBound = this._onUpdate.bind(this);
+    this.pitchBound = this._onPitchBound.bind(this);
     this._ampCallback;
+    this._pitchCallback;
   }
 
   getAmplitude(callback){
@@ -36,9 +38,18 @@ class AudioYoutubeSono {
    return this.analyser.getAmplitude(this.updateBound);
   }
 
+  getPitch(callback){
+  	this._pitchCallback = callback;
+   return this.analyser.getPitch(this.pitchBound);
+  }
+
   _onUpdate(amp){
   	this._beat.setAmp(amp);
   	this._ampCallback(amp);
+  }
+
+  _onPitchBound(pitch){
+  	this._pitchCallback(pitch);
   }
 
   isBeat(){

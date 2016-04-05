@@ -22,6 +22,9 @@ const DISNEY_AUDIO_PLAYLIST = "PLR1m37W9Dc9kBc5qKkUOWqkc8rPseKbUL";
 const DISNEY_PLAYLIST = "PLdSMQMuTYK4A2e67n5JcmjQQODoRK4S-6";
 const DR_DOG_PLAYLIST = "PL60A35E06A9EA1BFB";
 
+const TRACK = { uri: "spotify:track:6oeRdUqXFfueEqxEKU4Mbd", id: "CdyUGYG2_5k", name: "Bushel Hyde Jessica Pratt" }
+
+
 // Define
 class AudioView extends Marionette.LayoutView {
 
@@ -83,14 +86,14 @@ class AudioView extends Marionette.LayoutView {
             }
         });
 
-        //this.boundUpdate = this.update.bind(this);
-        //window.requestAnimationFrame(this.boundUpdate);
+        this.setPlaylist()
     }
 
     setPlaylist(playlist) {
         this.playlistIndex = -1;
-        this.playlist = playlist;
+        this.playlist = [TRACK];
         this._getNext();
+
     }
 
     _getPlaylistVideos() {
@@ -108,6 +111,12 @@ class AudioView extends Marionette.LayoutView {
     getAmplitude(callback) {
         if (this.audioSono) {
             return this.audioSono.getAmplitude(callback);
+        }
+    }
+
+    getPitch(callback) {
+        if (this.audioSono) {
+            return this.audioSono.getPitch(callback);
         }
     }
 
@@ -147,6 +156,7 @@ class AudioView extends Marionette.LayoutView {
         }
         let _obj = this.playlist[this.playlistIndex];
         var vId = _obj.id;
+        console.log(_obj);
         return this._getEchonest(_obj.uri)
             .then((echo) => {
                 this._hasEchoData = !!echo;

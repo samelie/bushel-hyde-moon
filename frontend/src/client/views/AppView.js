@@ -1,5 +1,5 @@
 'use strict';
-
+import './app.scss';
 // Vendor dependencies
 import Backbone from 'backbone';
 import Marionette from 'backbone.marionette';
@@ -63,25 +63,13 @@ class AppView extends Marionette.LayoutView {
 		//   });
 		// });
 
-		Channel.on('spotify:login:success', () => {
-			SpotifyService.getMe().then(me => {
-				YoutubeService.getYoutubeAudioTracks(SPOTIFY_PLAYLIST)
-				.then((results) => {
-					this.audioView = new AudioView();
-					this.audioRegion.show(this.audioView);
-					Channel.trigger('audio:playlist:set', results);
-				})
-				.catch(err=>{
-					console.log(err);
-				})
-				.done();
-				//SpotifyService.getUserPlaylists().then((r) => {console.log(r);})
-			});
-		});
-
 		// this.searchRegion.show(new SearchView());
 
 		Channel.on('youtube:login:success', (auth) => {
+
+			this.audioView = new AudioView();
+			this.audioRegion.show(this.audioView);
+
 			this.vjView = new VjView();
 			this.vjView.setAudioAnalyzeVo(this._audioAnalyzeVo);
 			this.youtubeRegion.show(this.vjView);
@@ -89,6 +77,7 @@ class AppView extends Marionette.LayoutView {
 
 		this.boundUpdate = this.update.bind(this);
 		this.boundOnAmplitude = this._onAmplitude.bind(this);
+		this.boundOnPitch = this._onPitch.bind(this);
 
 		this._audioAnalyzeVo = {
 			beat:0,
@@ -110,6 +99,7 @@ class AppView extends Marionette.LayoutView {
 		if (this.audioView) {
 			this.audioView.update();
 			this.audioView.getAmplitude(this.boundOnAmplitude);
+			this.audioView.getPitch(this.boundOnPitch);
 		}
 
 		if (this.vjView) {
@@ -122,6 +112,11 @@ class AppView extends Marionette.LayoutView {
 		let _b = this.audioView.isBeat();
 		this._audioAnalyzeVo.beat = _b;
 		this._audioAnalyzeVo.amplitude = amp;
+	}
+
+	_onPitch(pitch){
+		this._audioAnalyzeVo.hertz = pitch.hertz;
+		this._audioAnalyzeVo.note = pitch.noteIndex;
 	}
 
 	showUserPlaylists(playlists) {

@@ -213,6 +213,9 @@ class MediaPlaylist {
 
 	_updateYoutubeResults(data) {
 		let _ids = [];
+		if(this.options.shufflePlaylist){
+			Utils.shuffle(data.items);
+		}
 		_.each(data.items, (item) => {
 			_ids.push(Utils.getIdFromItem(item));
 		});

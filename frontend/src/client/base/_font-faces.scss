@@ -1,19 +1,46 @@
 @font-face {
 	font-family: 'asapregular';
-	src: url('/assets/fonts/asap/asap-regular-webfont.woff2') format('woff2');
-	src: url('/assets/fonts/asap/asap-regular-webfont.woff') format('woff');
-	src: url('/assets/fonts/asap/asap-regular-webfont.ttf') format('truetype');
-	src: url('/assets/fonts/asap/asap-regular-webfont.svg#svgFontName') format('svg');
+	src: url('/assets/font/asap/asap-regular-webfont.woff2') format('woff2'),
+			url('/assets/font/asap/asap-regular-webfont.woff') format('woff'),
+			url('/assets/font/asap/asap-regular-webfont.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
-	font-family: 'asapbold';
-	src: url('/assets/fonts/asap/asap-bold-webfont.woff2') format('woff2');
-	src: url('/assets/fonts/asap/asap-bold-webfont.woff') format('woff');
-	src: url('/assets/fonts/asap/asap-bold-webfont.ttf') format('truetype');
-	src: url('/assets/fonts/asap/asap-bold-webfont.svg#svgFontName') format('svg');
+	font-family: 'inconsolata';
+	src: url('/assets/font/inconsolata/Inconsolata-Regular.woff2') format('woff2'),
+			url('/assets/font/inconsolata/Inconsolata-Regular.woff') format('woff'),
+			url('/assets/font/inconsolata/Inconsolata-Regular.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
+
+@font-face {
+	font-family: 'poiret';
+	src: url('/assets/font/poiret/PoiretOne-Regular.woff2') format('woff2'),
+		url('/assets/font/poiret/PoiretOne-Regular.woff') format('woff'),
+			url('/assets/font/poiret/PoiretOne-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'ralereg';
+	src: url('/assets/font/raleway/Raleway-Regular.woff2') format('woff2'),
+		url('/assets/font/raleway/Raleway-Regular.woff') format('woff'),
+			url('/assets/font/raleway/Raleway-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'ralelight';
+	src: url('/assets/font/raleway/Raleway-Light.woff2') format('woff2'),
+		url('/assets/font/raleway/Raleway-Light.woff') format('woff'),
+			url('/assets/font/raleway/Raleway-Light.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+

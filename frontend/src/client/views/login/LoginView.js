@@ -6,6 +6,7 @@ import Backbone from 'backbone';
 import Utils from 'utils';
 import Channel from 'channel';
 import Session from 'session';
+import GSAP from 'gsap';
 
 // Core dependencies
 // App dependencies
@@ -20,6 +21,8 @@ class LoginView extends Marionette.ItemView {
   ui() {
     return {
       btn: '.youtube',
+      loginTitle: '.login-title',
+      loginInstruc: '.login-instruc',
       btnSpot: '.spotify',
       vj: '.vj'
     }

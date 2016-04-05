@@ -25,6 +25,7 @@ import ControlPerameters from './vj-control-perameters';
 
 const PLAY_VJ = "PLOnhHR5nulMPisi4X15rmPpEVp2Q-MIY0";
 const TRENDING_TODAY = "PLbpi6ZahtOH7h9OULR1AVb4i8zo0ctwEr";
+const MOON_P = "PLBm5UHsvUTFoHiOgZl8Ycn7Y3XySDSXuV";
 
 // Define
 class VjView extends Marionette.ItemView {
@@ -61,7 +62,7 @@ class VjView extends Marionette.ItemView {
 
         Channel.on('videostarted', (ytItem) => {
             this.gettingRelated = false;
-            this.ui.videoInfo[0].innerHTML = ytItem.snippet.title;
+            //this.ui.videoInfo[0].innerHTML = ytItem.snippet.title;
         }, this);
 
 
@@ -78,7 +79,8 @@ class VjView extends Marionette.ItemView {
     onShow() {
         this.vj = new VJManager(this.el, {
             count: 1,
-            playlists: [PLAY_VJ],
+            playlists: [MOON_P],
+            shufflePlaylist:true,
             maxVideoTime: 15,
             quality: {
                 chooseBest: true,
@@ -127,11 +129,11 @@ class VjView extends Marionette.ItemView {
         let x = e.pageX / this.windowWidth;
         if (y > .8 && x < 0.2) {
             this.gettingRelated = true;
-            Channel.trigger('addrelatedtocurrent');
+           // Channel.trigger('addrelatedtocurrent');
         } else {
             if (y > .8 && x > 0.8) {
                 this.gettingRelated = true;
-                Channel.trigger('adddeeper');
+              //  Channel.trigger('adddeeper');
             }
         }
     }
