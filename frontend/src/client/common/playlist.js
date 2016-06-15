@@ -10,8 +10,10 @@ const Playlist = (() => {
         _.forIn(data, mission => {
             _.forIn(mission, group => {
                 _.each(group, path => {
-                    if (path.indexOf('-r') < 0) {
-                        urls.push(`${STORAGE}${path}`);
+                    if (path.indexOf('minerals') > 0) {
+                        if (path.indexOf('-r') < 0) {
+                            urls.push(`${STORAGE}${path}`);
+                        }
                     }
                 })
             })
