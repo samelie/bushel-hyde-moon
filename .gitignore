@@ -1,5 +1,4 @@
 *.jpg
 node_modules
-*.json
 envvars
 .DS_Store
