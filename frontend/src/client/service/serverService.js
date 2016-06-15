@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import Q from 'bluebird';
 import Utils from 'utils';
-
+import QS from 'query-string';
 import BlueBirdQueue from './bluebirdQueue';
 
 import Session from 'session';
@@ -12,7 +12,11 @@ let _requestQueue = new BlueBirdQueue({
 });
 
 
-const MOON_BASE = "https://s3-eu-west-1.amazonaws.com/rad-moon/";
+const MOON_BASE = "assets/";
+
+const DEFAULTS = {
+  maxResults:50
+};
 
 
 const _addRequest = function(prom) {
@@ -25,7 +29,7 @@ const _addRequest = function(prom) {
 const ServerService = {
 
 	getManifest() {
-		return fetch(`${MOON_BASE}rad-moon-manifest`).then(response => {
+		return fetch(`images.json`).then(response => {
 			return response.json();
 		});
 	},
@@ -74,6 +78,20 @@ const ServerService = {
 		});
 		return _addRequest(p);
 	},
+
+	playlistItems(options){
+			let params = QS.stringify(_.assign({}, {
+				part: 'snippet',
+				videoDuration: 'any',
+				maxResults: 50,
+				type: 'video',
+				safeSearch: 'none'
+			}, DEFAULTS, options));
+
+			return fetch(`${process.env.SERVER_BASE}youtube/playlistItems?${params}`).then(response => {
+				return response.json();
+			});
+		},
 
 	channelUploadsFromComments(results, userProfile, existingIds) {
 		let channelIds = [];

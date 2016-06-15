@@ -77,7 +77,7 @@ class AudioView extends Marionette.LayoutView {
         this.audioSource.videoStartedSignal.add((currentVo) => {
             if (this._hasEchoData) {
                 let _c = this.currentTrack();
-                this.currentTempo = _c.echo.audio_summary.tempo;
+                this.currentTempo = _c.echo.tempo;
                 this.beatCounter = this.currentTempo;
                 //seconds and update time
                 Utils.log(`Tempo:${this.currentTempo} - ${_c.q}`);
@@ -156,26 +156,41 @@ class AudioView extends Marionette.LayoutView {
         }
         let _obj = this.playlist[this.playlistIndex];
         var vId = _obj.id;
-        console.log(_obj);
-        return this._getEchonest(_obj.uri)
-            .then((echo) => {
-                this._hasEchoData = !!echo;
-                _obj.echo = echo;
-                return ServerService.getSidx(vId, {
-                    chooseBest: true,
-                    audioonly: true
-                }).then((results) => {
-                    let vo = VjUtils.createVo(results, {
-                        all: true
-                    });
-
-                    Channel.trigger('audio:newtrack', _obj);
-                    //this.audioSono.analyzeAudio(vo);
-                    this.audioSource.addVo(vo);
-                }).catch(err => {
-                    console.log(err)
-                });
+        this._hasEchoData = true;
+        _obj.echo = {
+            "danceability": 0.394,
+            "energy": 0.236,
+            "key": 0,
+            "loudness": -11.747,
+            "mode": 0,
+            "speechiness": 0.0341,
+            "acousticness": 0.965,
+            "instrumentalness": 0.146,
+            "liveness": 0.108,
+            "valence": 0.234,
+            "tempo": 164.880,
+            "type": "audio_features",
+            "id": "6oeRdUqXFfueEqxEKU4Mbd",
+            "uri": "spotify:track:6oeRdUqXFfueEqxEKU4Mbd",
+            "track_href": "https://api.spotify.com/v1/tracks/6oeRdUqXFfueEqxEKU4Mbd",
+            "analysis_url": "https://api.spotify.com/v1/audio-analysis/6oeRdUqXFfueEqxEKU4Mbd",
+            "duration_ms": 250881,
+            "time_signature": 4
+        };
+        console.log(vId);
+        return ServerService.getSidx(vId, {
+            audioonly: true
+        }).then((results) => {
+            let vo = VjUtils.createVo(results, {
+                all: true
             });
+
+            Channel.trigger('audio:newtrack', _obj);
+            //this.audioSono.analyzeAudio(vo);
+            this.audioSource.addVo(vo);
+        }).catch(err => {
+            console.log(err)
+        });
     }
 
     _getEchonest(trackId) {

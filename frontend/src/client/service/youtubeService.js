@@ -95,6 +95,7 @@ const YT = {
 		},
 
 		playlistItems(options){
+			console.log(options);
 			let params = QS.stringify(_.assign({}, {
 				part: 'snippet',
 				videoDuration: 'any',

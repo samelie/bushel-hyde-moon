@@ -68,7 +68,7 @@ class VjView extends Marionette.ItemView {
 
         Channel.on('audio:newtrack', (data) => {
             if (data.echo) {
-                let _energy = data.echo.audio_summary.energy;
+                let _energy = data.echo.energy;
                 ControlPerameters.playlistUtils.spread = _energy;
             }
         });
@@ -83,8 +83,7 @@ class VjView extends Marionette.ItemView {
             shufflePlaylist:true,
             maxVideoTime: 15,
             quality: {
-                chooseBest: true,
-                resolution: '360p'
+                videoonly: true
             },
             verbose: false
         });

@@ -72,9 +72,9 @@ const POPUP = {
                 } catch (e) {
 
                 }
+                console.log(href);
                 if (href) {
                     let hasCode = href.indexOf('access_token=') !== -1;
-                    console.log(hasCode)
                     if (hasCode) {
                         let q = Utils.parseQueryString(href);
                         let access_token = '';

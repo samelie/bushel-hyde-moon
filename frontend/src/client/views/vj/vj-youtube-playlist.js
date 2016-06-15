@@ -55,10 +55,11 @@ class MediaPlaylist {
 		console.log(this.options.playlists);
 		if (this.options.playlists) {
 			return Q.map(this.options.playlists, (id) => {
-				return YoutubeService.playlistItems({
+				return ServerService.playlistItems({
 						playlistId: id
 					})
 					.then(results => {
+						console.log(results);
 						this._updateYoutubeResults(results);
 						return Q.map(this.youtubeItems, (item) => {
 							let vId = Utils.getIdFromItem(item);

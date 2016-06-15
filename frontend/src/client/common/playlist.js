@@ -3,16 +3,19 @@ import Utils from 'utils';
 import path from 'path';
 // Define
 const Playlist = (() => {
+    const STORAGE = 'https://storage.googleapis.com/samrad-moon/downloads/'
 
     function getUrlsByType(data, type) {
         let urls = [];
-        _.each(data, (obj)=>{
-            if(obj.type === type){
-                if(obj.url.indexOf('-r') <0){
-                    urls.push(obj.url);
-                }
-            }
-        });
+        _.forIn(data, mission => {
+            _.forIn(mission, group => {
+                _.each(group, path => {
+                    if (path.indexOf('-r') < 0) {
+                        urls.push(`${STORAGE}${path}`);
+                    }
+                })
+            })
+        })
         return urls;
     }
 

@@ -67,13 +67,9 @@ class AppView extends Marionette.LayoutView {
 
 		Channel.on('youtube:login:success', (auth) => {
 
-			this.audioView = new AudioView();
-			this.audioRegion.show(this.audioView);
-
-			this.vjView = new VjView();
-			this.vjView.setAudioAnalyzeVo(this._audioAnalyzeVo);
-			this.youtubeRegion.show(this.vjView);
+			
 		});
+		
 
 		this.boundUpdate = this.update.bind(this);
 		this.boundOnAmplitude = this._onAmplitude.bind(this);
@@ -87,7 +83,13 @@ class AppView extends Marionette.LayoutView {
 	}
 
 	onRender() {
-		this.centerRegion.show(new LoginView());
+		//this.centerRegion.show(new LoginView());
+		this.audioView = new AudioView();
+			this.audioRegion.show(this.audioView);
+
+			this.vjView = new VjView();
+			this.vjView.setAudioAnalyzeVo(this._audioAnalyzeVo);
+			this.youtubeRegion.show(this.vjView);
 	}
 
 	onShow() {
