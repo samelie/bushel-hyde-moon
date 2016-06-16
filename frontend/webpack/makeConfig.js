@@ -101,7 +101,7 @@ export default function makeConfig(isDevelopment) {
 						//SERVER_BASE: JSON.stringify(`http://localhost:9999/`),
 						//SERVER_BASE: JSON.stringify(`http://52.6.39.117/`), //good
 						//SERVER_BASE: JSON.stringify(`http://moon.mars.wtf/`),
-						SERVER_BASE: JSON.stringify(`http://104.155.67.105:8080/`),
+						SERVER_BASE: JSON.stringify(`https://104.155.67.105:8080/`),
 						//SERVER_BASE: JSON.stringify(`http://${serverIp}:9999/`),
 						IS_BROWSER: true
 					}
