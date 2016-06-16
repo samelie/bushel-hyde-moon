@@ -13,6 +13,7 @@ let _requestQueue = new BlueBirdQueue({
 
 
 const MOON_BASE = "assets/";
+console.log(process.env.SERVER_BASE);
 
 const DEFAULTS = {
   maxResults:50
