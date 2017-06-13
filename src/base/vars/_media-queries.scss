@@ -1,0 +1,20 @@
+// break points
+$bp-mobile: 360px;
+$bp-phablet: 540px;
+$bp-tablet: 768px;
+$bp-tablet-h: 1024px;
+$bp-desktop: 1280px;
+$bp-desktop-m: 1440px;
+$bp-desktop-l: 1680px;
+$bp-desktop-xl: 1920px;
+
+// media queries
+$mq-phone: '(max-width: #{$bp-mobile})';
+$mq-phablet-down: '(max-width: #{$bp-phablet})';
+$mq-phablet: '(min-width: #{$bp-mobile + 1}) and (max-width: #{$bp-phablet})';
+$mq-tablet-down: '(max-width: #{$bp-tablet-h})';
+$mq-tablet: '(min-width: #{$bp-phablet + 1}) and (max-width: #{$bp-tablet-h})';
+$mq-desktop: '(min-width: #{$bp-desktop})';
+$mq-desktop-l: '(min-width: #{$bp-desktop-l})';
+
+// usage example: @media #{$mq-tablet} { ... }

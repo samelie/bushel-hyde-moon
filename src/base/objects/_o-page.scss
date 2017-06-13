@@ -1,0 +1,39 @@
+.o-page {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+
+	&.enter {
+		opacity: 0.01;
+
+		&.enter-active {
+			opacity: 1;
+			transition: opacity 500ms ease-in;
+		}
+	}
+
+	&.leave {
+		opacity: 1;
+
+		&.leave-active {
+			opacity: 0.01;
+			transition: opacity 300ms ease-out;
+		}
+	}
+
+	&.appear {
+		opacity: 0.01;
+
+		&.appear-active {
+			opacity: 1;
+			transition: opacity 500ms ease-in;
+		}
+	}
+
+}
+
+.o-page__inner {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}

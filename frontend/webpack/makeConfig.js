@@ -40,9 +40,19 @@ export default function makeConfig(isDevelopment) {
 	}
 
 	const config = {
-		hotPort: constants.HOT_RELOAD_PORT,
+		devServer: {
+			host: '0.0.0.0',
+			inline: true,
+			hot: true,
+			stats: {
+				colors: true
+			},
+			contentBase: path.resolve(__dirname, constants.ABSOLUTE_BASE),
+			historyApiFallback: isDevelopment,
+			port: constants.HOT_RELOAD_PORT
+		},
 		cache: isDevelopment,
-		debug: isDevelopment,
+		//debug: isDevelopment,
 		devtool: isDevelopment ? devtools : '',
 		entry: {
 			app: isDevelopment ? [
@@ -77,12 +87,6 @@ export default function makeConfig(isDevelopment) {
 				exclude: /node_modules/
 			}].concat(stylesLoaders())
 		},
-		sassLoader: {
-			includePaths: [
-				path.join(constants.SRC_DIR, 'client/base'),
-				path.join(constants.SRC_DIR, 'client/base/vars')
-			]
-		},
 		output: isDevelopment ? {
 			path: constants.BUILD_DIR,
 			filename: '[name].js',
@@ -109,14 +113,14 @@ export default function makeConfig(isDevelopment) {
 				})
 			];
 			if (isDevelopment) plugins.push(
-				new webpack.optimize.OccurenceOrderPlugin(),
+				//new webpack.optimize.OccurenceOrderPlugin(),
 				new webpack.HotModuleReplacementPlugin(),
 				new webpack.NoErrorsPlugin()
 			);
 			else plugins.push(
 				// Render styles into separate cacheable file to prevent FOUC and
 				// optimize for critical rendering path.
-				new ExtractTextPlugin(isDevelopment ?'app-[hash].css' : 'app.css', {
+				new ExtractTextPlugin(isDevelopment ? 'app-[hash].css' : 'app.css', {
 					allChunks: true
 				}),
 				new AssetsPlugin({
@@ -126,43 +130,61 @@ export default function makeConfig(isDevelopment) {
 					update: true
 				}),
 				new webpack.optimize.DedupePlugin(),
-				new webpack.optimize.OccurenceOrderPlugin(),
+				//new webpack.optimize.OccurenceOrderPlugin(),
 				new webpack.optimize.UglifyJsPlugin({
 					compress: {
 						screw_ie8: true, // eslint-disable-line camelcase
 						warnings: false // Because uglify reports irrelevant warnings.
 					}
+				}),
+				new webpack.LoaderOptionsPlugin({
+					options: {
+						postcss: () => [
+							autoprefixer({
+								browsers: [
+									'last 2 versions',
+									'iOS >= 8',
+									'Safari >= 8',
+								]
+							}),
+							postcssEasings
+						],
+					}
+				}),
+				new webpack.LoaderOptionsPlugin({
+					options: {
+						sassLoader: {
+							assetsUrl: `"${ASSETS_DIR}"`,
+							includePaths: [
+								join(constants.SRC_DIR, 'client/base'),
+								join(constants.SRC_DIR, 'client/base/vars')
+							],
+						},
+					}
 				})
 			);
 			return plugins;
 		})(),
-		postcss: () => [
-			autoprefixer({
-				browsers: 'last 2 version'
-			}),
-			postcssEasings
-		],
 		resolve: {
 			extensions: ['', '.js', '.json'],
 			modulesDirectories: ['src', 'node_modules'],
-			root: constants.ABSOLUTE_BASE,
-      alias:{
-        underscore: 'lodash',
-        'echonestService': require.resolve(path.join(constants.SRC_DIR, 'client/service/echonestService.js')),
-        'youtubeService': require.resolve(path.join(constants.SRC_DIR, 'client/service/youtubeService.js')),
-        'spotifyService': require.resolve(path.join(constants.SRC_DIR, 'client/service/spotifyService.js')),
-        'popupService': require.resolve(path.join(constants.SRC_DIR, 'client/service/popupService.js')),
-        'serverService': require.resolve(path.join(constants.SRC_DIR, 'client/service/serverService.js')),
-        'knowledgeService': require.resolve(path.join(constants.SRC_DIR, 'client/service/knowledgeService.js')),
-        'shim': require.resolve(path.join(constants.SRC_DIR, 'client/common/shim.js')),
-        'ease-number': require.resolve(path.join(constants.SRC_DIR, 'client/common/ease-numbers.js')),
-        'utils': require.resolve(path.join(constants.SRC_DIR, 'client/common/utils.js')),
-        'channel': require.resolve(path.join(constants.SRC_DIR, 'client/common/channel.js')),
-        'playlist': require.resolve(path.join(constants.SRC_DIR, 'client/common/playlist.js')),
-        'sonoPlayer': require.resolve(path.join(constants.SRC_DIR, 'client/common/sonoPlayer.js')),
-        'session': require.resolve(path.join(constants.SRC_DIR, 'client/common/session.js')),
-        'emitter': require.resolve(path.join(constants.SRC_DIR, 'client/common/emitter.js'))
-      }
+			alias: {
+				underscore: 'lodash',
+				'echonestService': require.resolve(path.join(constants.SRC_DIR, 'client/service/echonestService.js')),
+				'youtubeService': require.resolve(path.join(constants.SRC_DIR, 'client/service/youtubeService.js')),
+				'spotifyService': require.resolve(path.join(constants.SRC_DIR, 'client/service/spotifyService.js')),
+				'popupService': require.resolve(path.join(constants.SRC_DIR, 'client/service/popupService.js')),
+				'serverService': require.resolve(path.join(constants.SRC_DIR, 'client/service/serverService.js')),
+				'knowledgeService': require.resolve(path.join(constants.SRC_DIR, 'client/service/knowledgeService.js')),
+				'shim': require.resolve(path.join(constants.SRC_DIR, 'client/common/shim.js')),
+				'ease-number': require.resolve(path.join(constants.SRC_DIR, 'client/common/ease-numbers.js')),
+				'utils': require.resolve(path.join(constants.SRC_DIR, 'client/common/utils.js')),
+				'channel': require.resolve(path.join(constants.SRC_DIR, 'client/common/channel.js')),
+				'playlist': require.resolve(path.join(constants.SRC_DIR, 'client/common/playlist.js')),
+				'sonoPlayer': require.resolve(path.join(constants.SRC_DIR, 'client/common/sonoPlayer.js')),
+				'session': require.resolve(path.join(constants.SRC_DIR, 'client/common/session.js')),
+				'emitter': require.resolve(path.join(constants.SRC_DIR, 'client/common/emitter.js'))
+			}
 		}
 	};
 
