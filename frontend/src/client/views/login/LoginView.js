@@ -15,6 +15,8 @@ import template from './login.ejs';
 import popupService from 'popupService';
 import SpotifyService from 'spotifyService';
 
+console.log(Marionette);
+
 // Define
 class LoginView extends Marionette.ItemView {
 

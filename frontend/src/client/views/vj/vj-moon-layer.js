@@ -1,5 +1,5 @@
 'use strict';
-import THREE from 'three';
+import * as THREE from 'three';
 import Playlist from 'playlist';
 import dat from 'dat-gui';
 import FxComposer from './vj-fx-composer';

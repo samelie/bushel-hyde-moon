@@ -179,7 +179,8 @@ class AudioView extends Marionette.LayoutView {
         };
         console.log(vId);
         return ServerService.getSidx(vId, {
-            audioonly: true
+            audioonly: true,
+            itags:['140']
         }).then((results) => {
             let vo = VjUtils.createVo(results, {
                 all: true

@@ -29,6 +29,12 @@ const _addRequest = function(prom) {
 
 const ServerService = {
 
+	getSidxs() {
+		return fetch(`${process.env.ASSETS_DIR}moon2.json?z=${Math.random()}`).then(response => {
+			return response.json();
+		});
+	},
+
 	getManifest() {
 		return fetch(`images.json`).then(response => {
 			return response.json();
@@ -59,9 +65,14 @@ const ServerService = {
 	},
 
 	getSidx(id, options) {
+
+		var type = options.audioonly ? 'audio' : 'video'
+    let itags = options.audioonly ? ['140'] : ['136']
+    console.log(itags);
 		let p = new Q((resolve, reject) => {
 			$.get(process.env.SERVER_BASE + 'getVideoSidx', {
 				id: id,
+				itags,
 				...options
 			}).then((data) => {
 				if (data.status === 500) {

@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 THREE.ShaderPass = function(shader,camera,textureID, uniforms) {
 
   this.textureID = (textureID !== undefined) ? textureID : "tDiffuse";

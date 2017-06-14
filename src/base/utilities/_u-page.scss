@@ -1,0 +1,81 @@
+@import 'fonts';
+.u-page--col--half {
+    position: relative;
+    width: 50%;
+    height: 100%;
+}
+
+.u-page--col--small {
+    position: relative;
+    width: 20%;
+}
+
+.u-page--col--big {
+    position: relative;
+    width: 80%;
+    height: 100%;
+}
+
+.u-bottom-margin{
+    margin-bottom:6px;
+}
+
+.u-page--bg {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.u-third--wide {
+    width: 33.3%;
+}
+
+.u-text-small {
+    font-size: $fs-sm;
+}
+.u-text-xsmall {
+    font-size: $fs-xsm;
+}
+
+.u-underline {
+    text-decoration: underline;
+}
+.u-oneline{
+    white-space: nowrap;
+}
+.button--action {
+    position:relative;
+    background: url('../assets/images/button.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: nowrap;
+    word-wrap: inherit;
+    white-space: nowrap;
+    user-select:none;
+    color: rgba(0,0,0,0.8);
+    &:hover{
+      background: url('../assets/images/button-hover.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+    }
+}
+
+.button--action:before {
+    display: block;
+    content: " ";
+    width: 100%;
+    padding-top: calc((92 / 392) * 100%);
+}
+
+.button--action > .content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}

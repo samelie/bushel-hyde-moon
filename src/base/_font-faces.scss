@@ -1,46 +1,35 @@
 @font-face {
-	font-family: 'asapregular';
-	src: url('/assets/font/asap/asap-regular-webfont.woff2') format('woff2'),
-			url('/assets/font/asap/asap-regular-webfont.woff') format('woff'),
-			url('/assets/font/asap/asap-regular-webfont.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
+	font-family: 'lulobold';
+  src: url('../assets/font/lulobold/lulo_clean_one_bold-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-	font-family: 'inconsolata';
-	src: url('/assets/font/inconsolata/Inconsolata-Regular.woff2') format('woff2'),
-			url('/assets/font/inconsolata/Inconsolata-Regular.woff') format('woff'),
-			url('/assets/font/inconsolata/Inconsolata-Regular.ttf') format('truetype');
+  font-family: 'lulo';
+  src: url('../assets/font/lulobold/lulo_clean_one_bold-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*@font-face {
+	font-family: 'lulotwo';
+	src: url('../dist/assets/font/lulotwo/lulotwo-webfont.eot');
+	src: url('../dist/assets/font/lulotwo/lulotwo-webfont.eot?#iefix') format('embedded-opentype'),
+			 url('../dist/assets/font/lulotwo/lulotwo-webfont.woff') format('woff'),
+			 url('../dist/assets/font/lulotwo/lulotwo-webfont.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}*/
+
+
+/*@font-face {
+	font-family: 'op';
+	src: url('../dist/assets/font/op/oplight.eot');
+	src: url('../dist/assets/font/op/oplight.eot?#iefix') format('embedded-opentype'),
+			 url('../dist/assets/font/op/oplight.woff') format('woff'),
+			 url('../dist/assets/font/op/oplight.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
-
-@font-face {
-	font-family: 'poiret';
-	src: url('/assets/font/poiret/PoiretOne-Regular.woff2') format('woff2'),
-		url('/assets/font/poiret/PoiretOne-Regular.woff') format('woff'),
-			url('/assets/font/poiret/PoiretOne-Regular.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'ralereg';
-	src: url('/assets/font/raleway/Raleway-Regular.woff2') format('woff2'),
-		url('/assets/font/raleway/Raleway-Regular.woff') format('woff'),
-			url('/assets/font/raleway/Raleway-Regular.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
-}
-
-@font-face {
-	font-family: 'ralelight';
-	src: url('/assets/font/raleway/Raleway-Light.woff2') format('woff2'),
-		url('/assets/font/raleway/Raleway-Light.woff') format('woff'),
-			url('/assets/font/raleway/Raleway-Light.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
-}
-
-
+*/

@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 THREE.GlitchPass = function ( dt_size ) {
 
 	if ( THREE.DigitalGlitch === undefined ) console.error( "THREE.GlitchPass relies on THREE.DigitalGlitch" );

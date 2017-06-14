@@ -14,6 +14,23 @@ import Marionette from 'backbone.marionette';
 import AppRouter from './routers/AppRouter';
 import AppView from './views/AppView';
 
+/*var rm = new Marionette.RegionManager();
+
+var region = rm.addRegions({
+  "main":{
+    selector: "#app",
+  },
+  "centerRegion": {
+    selector: '[data-region="center"]',
+  },
+  "audioRegion": {
+    selector: '[data-region="audio"]',
+  },
+  "youtubeRegion": {
+    selector: '[data-region="youtube"]'
+  }
+});*/
+
 // Define
 // TODO: double-check if there's any advantage in extending Marionette.Application
 class App extends Marionette.Application {
@@ -22,12 +39,22 @@ class App extends Marionette.Application {
     super();
   }
 
+  /*getRegionManager() {
+    // custom logic
+    return rm
+  }*/
+
+  regions() {
+    return {
+      "main": '#app'
+    }
+  }
+
   initialize() {
     const appView = new AppView();
-    this.addRegions({
-      "main": 'body'
-    });
-    this.main.show(appView);
+    this.main.show(appView)
+    //console.log(this._regionManager._regions.main.show);
+    //this._regionManager._regions.main.show(appView);
     const appRouter = new AppRouter();
   }
 

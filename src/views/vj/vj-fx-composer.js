@@ -1,6 +1,6 @@
 'use strict';
 import _ from 'lodash';
-import THREE from 'three';
+import * as THREE from 'three';
 import Shaders from './shaders/shaders';
 
 class EffectComposer {

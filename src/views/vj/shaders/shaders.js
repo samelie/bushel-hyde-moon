@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import CopyShader from '../post/CopyShader';
 import EffectComposer from '../post/EffectComposer';
 import MaskPass from '../post/MaskPass';

@@ -1,0 +1,13 @@
+{
+  "name": "gs-upload",
+  "version": "1.0.0",
+  "main": "main.js",
+  "private": true,
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "google-cloudstorage-commands": "0.0.1",
+    "lodash": "^4.17.4",
+    "node-dash-sidx": "^0.1.12",
+    "shelljs": "^0.7.8"
+  }
+}

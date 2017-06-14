@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 THREE.MaskPass = function ( scene, camera ) {
 
 	this.scene = scene;

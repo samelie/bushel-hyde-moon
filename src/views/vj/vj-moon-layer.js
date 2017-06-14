@@ -1,5 +1,5 @@
 'use strict';
-import THREE from 'three';
+import * as THREE from 'three';
 import Playlist from 'playlist';
 import dat from 'dat-gui';
 import FxComposer from './vj-fx-composer';
@@ -34,13 +34,15 @@ class MoonLayer {
 			imageHold: 1000
 		};
 
-		this.gui = new dat.GUI();
-		this.gui.add(options, 'transitionTime', 10, 2000).onChange((val) => {
-			this.imagePlayer.setTransitionTime(val);
-		});
-		this.gui.add(options, 'imageHold', 1, 2000).onChange((val) => {
-			this.imagePlayer.setImageHold(val);
-		});
+		if(!process.env.IS_APP){
+			this.gui = new dat.GUI();
+			this.gui.add(options, 'transitionTime', 10, 2000).onChange((val) => {
+				this.imagePlayer.setTransitionTime(val);
+			});
+			this.gui.add(options, 'imageHold', 1, 2000).onChange((val) => {
+				this.imagePlayer.setImageHold(val);
+			});
+		}
 
 		ServerServise.getManifest().then(data => {
 			let urls = Playlist.getUrlsByType(data, 'minerals');

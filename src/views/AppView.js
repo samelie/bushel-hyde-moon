@@ -1,5 +1,5 @@
 'use strict';
-import './app.scss';
+
 // Vendor dependencies
 import Backbone from 'backbone';
 import Marionette from 'backbone.marionette';
@@ -20,6 +20,7 @@ import YoutubeService from 'youtubeService';
 
 const SPOTIFY_PLAYLIST = "72EGtLR6ZPqk0WdMTX21As";
 // Define
+
 class AppView extends Marionette.LayoutView {
 
 	constructor() {
@@ -27,7 +28,7 @@ class AppView extends Marionette.LayoutView {
 	}
 
 	template() {
-		return template;
+		return template();
 	}
 
 	ui() {
@@ -50,6 +51,12 @@ class AppView extends Marionette.LayoutView {
 		Q.config({
 			cancellation: true
 		});
+		/*this.regionManager.addRegion({
+			centerRegion: '[data-region="center"]',
+			audioRegion: '[data-region="audio"]',
+			youtubeRegion: '[data-region="youtube"]'
+		})*/
+		//console.log(this);
 		// auto render
 		// Channel.on(Channel.VJ_START, this.onVjStart, this);
 
@@ -67,9 +74,9 @@ class AppView extends Marionette.LayoutView {
 
 		Channel.on('youtube:login:success', (auth) => {
 
-			
+
 		});
-		
+
 
 		this.boundUpdate = this.update.bind(this);
 		this.boundOnAmplitude = this._onAmplitude.bind(this);

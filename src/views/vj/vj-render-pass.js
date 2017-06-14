@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import $ from 'jquery';
 import ShaderLib from './shaders/shader_lib';
 import Shaders from './shaders/shaders';

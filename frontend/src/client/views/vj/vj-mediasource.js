@@ -1,7 +1,7 @@
 'use strict';
 
 import Channel from 'channel';
-import THREE from 'three';
+import * as THREE from 'three';
 import Signals from 'signals';
 
 const VERBOSE = false;

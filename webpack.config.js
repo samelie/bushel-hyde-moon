@@ -24,12 +24,13 @@ const CSS_LOADERS = {
 const ASSETS_DIR = "https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/www-assets/"
 
 const ENV_VARS = {
-  //SOCKET_SERVER: '"http://0.0.0.0:8080"',
+  //SERVER_BASE: '"http://0.0.0.0:1337/"',
+  SERVER_BASE: '"https://rad.wtf/chewb/"',
   IS_APP: true,
   //SOCKET_SERVER: '"https://rad.wtf/chewb"',
   //APP_HOST: '"https://add.dog/"',
   APP_DOMAIN: '"/"',
-  ASSETS_DIR: '"https://storage.googleapis.com/samrad-adddog/www-assets/assets/"',
+  ASSETS_DIR: '"https://storage.googleapis.com/samrad-moon/"',
   REMOTE_ASSETS_DIR: `"${ASSETS_DIR}"`
 }
 
@@ -64,7 +65,6 @@ module.exports = env => {
   return {
     entry: {
       app: './main.js',
-      vendor: ['lodash']
     },
     output: {
       filename: 'bundle.[name].[chunkhash].js',
@@ -89,7 +89,7 @@ module.exports = env => {
     resolve: {
       extensions: ['.js', '.jsx'],
       alias: {
-        underscore: 'lodash',
+        //underscore: 'lodash',
         'echonestService': require.resolve(join(constants.SRC_DIR, 'service/echonestService.js')),
         'youtubeService': require.resolve(join(constants.SRC_DIR, 'service/youtubeService.js')),
         'spotifyService': require.resolve(join(constants.SRC_DIR, 'service/spotifyService.js')),
@@ -137,11 +137,15 @@ module.exports = env => {
         }, {
         test: /\.ejs$/,
         loader: "ejs-loader"
-      },{
-          test: /\.(glsl|vert|frag)$/,
-          loader: 'shader-loader',
-          exclude: /node_modules/
-        }]
+      }, {
+        test: /\.(glsl|frag|vert)$/,
+        loader: 'raw-loader',
+        exclude: /node_modules/
+      }, {
+        test: /\.(glsl|frag|vert)$/,
+        loader: 'glslify-loader',
+        exclude: /node_modules/
+      }]
         .concat(stylesLoaders()),
     },
     plugins: removeEmpty([

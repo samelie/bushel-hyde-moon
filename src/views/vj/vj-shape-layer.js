@@ -1,6 +1,6 @@
 'use strict';
 import $ from 'jquery';
-import THREE from 'three';
+import * as THREE from 'three';
 import ShaderLib from './shaders/shader_lib';
 import FxComposer from './vj-fx-composer';
 

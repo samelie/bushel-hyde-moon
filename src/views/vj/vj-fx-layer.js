@@ -1,5 +1,5 @@
 'use strict';
-import THREE from 'three';
+import * as THREE from 'three';
 import FxComposer from './vj-fx-composer';
 import Shaders from './shaders/shaders';
 

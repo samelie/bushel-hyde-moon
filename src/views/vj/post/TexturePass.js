@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 THREE.TexturePass = function ( texture, opacity ) {
 
 	if ( THREE.CopyShader === undefined )

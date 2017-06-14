@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 
 THREE.EffectComposer = function(renderer, renderTarget) {
 
@@ -53,7 +53,7 @@ THREE.EffectComposer.prototype = {
   },
 
   insertPass: function(pass, index) {
-    
+
     this.passes.splice(index, 0, pass);
 
   },

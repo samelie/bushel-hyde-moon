@@ -1,28 +1,40 @@
 // import variables
+@import '../node_modules/rc-slider/assets/index.css';
+@import 'mixins';
 @import 'fonts';
 @import 'colors';
 
 body {
-	overflow: hidden;
-	font-family: $ff-base;
-	font-size: $fs-base;
-	line-height: 1.5;
-	background: $c-grey-darkery;
-	-webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  font-family: $ff-base;
+  font-size: $fs-base;
+  line-height: 1.5;
+  background: $c-grey-dark;
+  -webkit-font-smoothing: antialiased;
 }
 
-button {
-	// scss-lint:disable all
-	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-	// scss-lint:enable all
+select, textarea, input-placeholder{
+  color: $c-grey-darker;
 }
 
+::-webkit-input-placeholder { /* Chrome */
+  color: $c-grey-darker;
+  font-family: $ff-base;
+}
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	font-family: $ff-base-bold;
+#app{
+ position: relative;
+  width: 100vw;
+  height: 100vh;
+
+}
+
+button:focus {outline:0 !important;}
+
+button{
+  font-family: $ff-lulobold;
+}
+
+*{
+  box-sizing:border-box;
 }

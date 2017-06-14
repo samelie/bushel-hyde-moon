@@ -1,7 +1,7 @@
 'use strict';
 
 import Channel from 'channel';
-import THREE from 'three';
+import * as THREE from 'three';
 import Signals from 'signals';
 
 const VERBOSE = false;
@@ -224,7 +224,11 @@ class VjMediaSource {
 		formData.append('byteLength', this.currentVo.byteLength);
 
 		let xhr = new XMLHttpRequest();
-		xhr.open('POST', process.env.SERVER_BASE + 'getVideo', true);
+		if(this.currentVo.url.indexOf('googlevideo') > -1){
+			xhr.open('POST', process.env.SERVER_BASE + 'getVideo', true);
+		}else{
+			xhr.open('GET', this.currentVo.url, true);
+		}
 		xhr.responseType = 'arraybuffer';
 		xhr.send(formData);
 		xhr.addEventListener("readystatechange", () => {
@@ -255,9 +259,14 @@ class VjMediaSource {
 		let xhr = new XMLHttpRequest();
 		let formData = new FormData();
 		formData.append('url', this.currentVo.url);
+		console.log(this.currentVo.url);
 		formData.append('indexRange', this.currentVo.indexRange);
 		formData.append('indexLength', this.currentVo.indexLength);
-		xhr.open('POST', process.env.SERVER_BASE + 'getVideoIndex', true);
+		if(this.currentVo.url.indexOf('googlevideo') > -1){
+			xhr.open('POST', process.env.SERVER_BASE + 'getVideoIndex', true);
+		}else{
+			xhr.open('GET', this.currentVo.url, true);
+		}
 		xhr.send(formData);
 		xhr.responseType = 'arraybuffer';
 		try {

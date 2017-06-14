@@ -12,6 +12,7 @@ import Channel from 'channel';
 import YoutubeService from 'youtubeService';
 import ServerService from 'serverService';
 import PlaylistUtils from './vj-youtube-playlist-utils';
+import ServerServise from 'serverService';
 import ControlPerameters from './vj-control-perameters';
 import VjUtils from './vj-utils';
 
@@ -51,7 +52,7 @@ class MediaPlaylist {
 		});
 	}
 
-	_init() {
+	/*_init() {
 		console.log(this.options.playlists);
 		if (this.options.playlists) {
 			return Q.map(this.options.playlists, (id) => {
@@ -84,11 +85,77 @@ class MediaPlaylist {
 				this._start();
 			});
 		}
+	}*/
+
+	_init() {
+		ServerService.getSidxs().then(data => {
+			this._createReferenceIndexFromResults(data);
+			this.sidxResults = [...data];
+			this._start();
+		});
+		/*if (this.options.playlists) {
+			return Q.map(this.options.playlists, (id) => {
+				return ServerService.playlistItems({
+						playlistId: id
+					})
+					.then(results => {
+						this._updateYoutubeResults(results);
+
+						return this._doSidxs(this.youtubeItems.splice(0, 2))
+
+					});
+			}, {
+				concurrency: 1
+			}).then((referenceIndexs) => {
+				this._start();
+			});
+		}*/
+	}
+
+	/*_init() {
+		if (this.options.playlists) {
+			return Q.map(this.options.playlists, (id) => {
+					return ServerService.playlistItems({
+							playlistId: id
+						})
+						.then(results => {
+							this._updateYoutubeResults(results);
+
+							return this._doSidxs(this.youtubeItems.splice(0, 2))
+
+						}, {
+							concurrency: 1
+						}).then((referenceIndexs) => {
+							this._start();
+							return this._doSidxs(this.youtubeItems)
+						});
+				}
+			}
+		}
+*/
+
+	_doSidxs(items) {
+		return Q.map(this.youtubeItems, (item) => {
+			let vId = Utils.getIdFromItem(item);
+			return this._getSidx(vId).catch(err => {
+				return undefined;
+			});
+		}, {
+			concurrency: 1
+		}).then(results => {
+			//clean
+			results = _.compact(results);
+
+			if (results.length) {
+				this.sidxResults = [...this.sidxResults, ...results];
+			}
+			return this._createReferenceIndexFromResults(results);
+		});
 	}
 
 	_start() {
 		Channel.on('addrelatedtocurrent', this._getRelatedTo, this);
-		Channel.on('adddeeper', this._getDeeper, this);
+		//Channel.on('adddeeper', this._getDeeper, this);
 		this._getNext();
 	}
 
@@ -112,7 +179,7 @@ class MediaPlaylist {
 						let _chosen = _ups.length ? _ups : _likes;
 						//sort by lowest viewcount
 						let _sorted = _chosen.sort(Utils.sortByView)[0];
-						if(!_sorted){
+						if (!_sorted) {
 							return this._getRelatedToAndCheck();
 						}
 						let newVideoId = _sorted.videoId;
@@ -164,10 +231,10 @@ class MediaPlaylist {
 		var item = Utils.getRandom(data.items);
 		var vId = Utils.getIdFromItem(item);
 		return this._getSidxAndAdd(vId)
-		.catch(err => {
-			console.log(err);
-			return this._onRelatedVideos(data);
-		});
+			.catch(err => {
+				console.log(err);
+				return this._onRelatedVideos(data);
+			});
 	}
 
 	_getSidxAndAdd(vId) {
@@ -191,7 +258,7 @@ class MediaPlaylist {
 		let referenceIndex = this.sidxIndexReferences[this.playlistReferenceIndex];
 		if (!referenceIndex) {
 			this._waiting = true;
-			this._getDeeper();
+			//this._getDeeper();
 			return;
 		}
 		console.log(this.playlistReferenceIndex, referenceIndex);
@@ -199,6 +266,7 @@ class MediaPlaylist {
 		let playlistItemIndex = split[0];
 		let playlistItemReferenceIndex = split[1];
 		let sidxPlaylistItem = this.sidxResults[playlistItemIndex];
+		console.log(sidxPlaylistItem);
 		let vo = VjUtils.getReferenceVo(sidxPlaylistItem, playlistItemReferenceIndex);
 		this.mediaSource.addVo(vo);
 		this.playlistReferenceIndex++;
@@ -214,7 +282,7 @@ class MediaPlaylist {
 
 	_updateYoutubeResults(data) {
 		let _ids = [];
-		if(this.options.shufflePlaylist){
+		if (this.options.shufflePlaylist) {
 			Utils.shuffle(data.items);
 		}
 		_.each(data.items, (item) => {
@@ -235,7 +303,9 @@ class MediaPlaylist {
 	}
 
 	_createReferenceIndexFromResults(results) {
+		console.log(results.length);
 		_.each(results, (item) => {
+			console.log(item);
 			this.playlistUtils.mix(item.sidx, this.playlistReferenceIndex, this.options);
 		});
 		return this.sidxIndexReferences;

@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import Shaders from '../shaders/shaders';
 
 THREE.TextPass = function ( texture, textTexture ) {
